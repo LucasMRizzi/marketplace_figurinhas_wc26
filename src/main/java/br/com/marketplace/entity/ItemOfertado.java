@@ -11,17 +11,14 @@ import org.hibernate.type.SqlTypes;
 
 @Entity
 @Table(name = "item_ofertado")
-@IdClass(ItemOfertadoId.class)
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ItemOfertado {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_item")
-    private Long idItem;
+    @EmbeddedId
+    private ItemOfertadoId id;
 
-    @Id
+    @MapsId("idOferta")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(
             name = "id_oferta",

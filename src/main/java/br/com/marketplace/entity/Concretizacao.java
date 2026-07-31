@@ -13,11 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(
-        name = "concretizacao",
-
-
-)
+@Table(name = "concretizacao")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Concretizacao {
@@ -25,7 +21,7 @@ public class Concretizacao {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_concretizacao")
-    private Long idConcretizacao;
+    private Integer idConcretizacao;
 
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
@@ -96,31 +92,31 @@ public class Concretizacao {
 
         this.oferta = oferta;
         this.aceitante = aceitante;
-        this.statusPagamento = StatusPagamento.Pendente;
+        this.statusPagamento = StatusPagamento.PENDENTE;
         this.dataAceite = LocalDate.now();
 
         oferta.concretizar();
     }
 
     public void iniciarProcessamentoPagamento() {
-        if (statusPagamento != StatusPagamento.Pendente) {
+        if (statusPagamento != StatusPagamento.PENDENTE) {
             throw new IllegalStateException(
                     "O pagamento não está pendente."
             );
         }
 
         this.statusPagamento =
-                StatusPagamento.Processamento;
+            StatusPagamento.PROCESSAMENTO;
     }
 
     public void confirmarPagamento() {
         if (statusPagamento
-                != StatusPagamento.Processamento) {
+                != StatusPagamento.PROCESSAMENTO) {
             throw new IllegalStateException(
                     "O pagamento não está em processamento."
             );
         }
 
-        this.statusPagamento = StatusPagamento.Pago;
+        this.statusPagamento = StatusPagamento.PAGO;
     }
 }

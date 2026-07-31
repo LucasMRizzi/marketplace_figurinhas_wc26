@@ -22,7 +22,7 @@ public class Oferta {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_oferta")
-    private Long idOferta;
+    private Integer idOferta;
 
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
@@ -55,13 +55,17 @@ public class Oferta {
 
     @OneToOne(
             mappedBy = "oferta",
-            fetch = FetchType.LAZY
+            fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
     )
     private Venda venda;
 
     @OneToOne(
             mappedBy = "oferta",
-            fetch = FetchType.LAZY
+            fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
     )
     private Troca troca;
 
@@ -76,8 +80,7 @@ public class Oferta {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    private List<ItemOfertado> itensOfertados =
-            new ArrayList<>();
+    private List<ItemOfertado> itensOfertados = new ArrayList<>();
 
     public Oferta(
             TipoOferta tipo,
@@ -97,12 +100,20 @@ public class Oferta {
 
         this.tipo = tipo;
         this.usuarioProponente = usuarioProponente;
-        this.status = StatusOferta.Pendente;
+        this.status = StatusOferta.PENDENTE;
         this.dataCriacao = LocalDate.now();
     }
 
     public boolean estaPendente() {
-        return status == StatusOferta.Pendente;
+        return status == StatusOferta.PENDENTE;
+    }
+
+    public boolean ehVenda() {
+        return tipo == TipoOferta.VENDA;
+    }
+
+    public boolean ehTroca() {
+        return tipo == TipoOferta.TROCA;
     }
 
     public void concretizar() {
@@ -112,7 +123,7 @@ public class Oferta {
             );
         }
 
-        this.status = StatusOferta.Concretizada;
+        this.status = StatusOferta.CONCRETIZADA;
     }
 
     public void expirar() {
@@ -122,6 +133,38 @@ public class Oferta {
             );
         }
 
-        this.status = StatusOferta.Expirada;
+        this.status = StatusOferta.EXPIRADA;
+    }
+
+    void associarVenda(Venda venda) {
+        if (tipo != TipoOferta.VENDA) {
+            throw new IllegalStateException(
+                    "Uma oferta de troca não pode receber dados de venda."
+            );
+        }
+
+        if (this.troca != null) {
+            throw new IllegalStateException(
+                    "A oferta já possui dados de troca."
+            );
+        }
+
+        this.venda = venda;
+    }
+
+    void associarTroca(Troca troca) {
+        if (tipo != TipoOferta.TROCA) {
+            throw new IllegalStateException(
+                    "Uma oferta de venda não pode receber dados de troca."
+            );
+        }
+
+        if (this.venda != null) {
+            throw new IllegalStateException(
+                    "A oferta já possui dados de venda."
+            );
+        }
+
+        this.troca = troca;
     }
 }
