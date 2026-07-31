@@ -42,13 +42,16 @@ public class Usuario {
             precision = 3,
             scale = 2
     )
-    private BigDecimal avaliacao_media;
+    private BigDecimal avaliacaoMedia;
 
     @Embedded
     private Endereco endereco;
 
     @OneToMany(mappedBy = "usuario")
     private List<PosseFigurinha> posses = new ArrayList<>();
+
+    @OneToMany(mappedBy = "usuario")
+    private List<Album> albuns = new ArrayList<>();
 
     protected Usuario(){
 
@@ -67,7 +70,43 @@ public class Usuario {
         this.telefone = telefone;
         this.endereco = endereco;
         this.saldo = BigDecimal.ZERO;
-        this.avaliacao_media = BigDecimal.ZERO;
+        this.avaliacaoMedia = BigDecimal.ZERO;
+    }
+
+    public void atualizarDados(
+            String nome,
+            String email,
+            String telefone,
+            Endereco endereco
+    ) {
+        if(nome == null || nome.isBlank()) {
+            throw new IllegalArgumentException(
+                    "O nome é obrigatório."
+            );
+        }
+
+        if(email == null || email.isBlank()) {
+            throw new IllegalArgumentException(
+                    "O email é obrigatório."
+            );
+        }
+
+        if (telefone == null || telefone.isBlank()) {
+            throw new IllegalArgumentException(
+                    "O telefone é obrigatório."
+            );
+        }
+
+        if (endereco == null) {
+            throw new IllegalArgumentException(
+                    "O endereço é obrigatório."
+            );
+        }
+
+        this.nome = nome;
+        this.email = email;
+        this.telefone = telefone;
+        this.endereco = endereco;
     }
 
     public void creditar(BigDecimal valor) {
@@ -88,7 +127,7 @@ public class Usuario {
             long quantidadeDeAvaliacoes
     ) {
         if(quantidadeDeAvaliacoes <= 0){
-            this.avaliacao_media = BigDecimal.ZERO;
+            this.avaliacaoMedia = BigDecimal.ZERO;
             return;
         }
 
@@ -105,7 +144,7 @@ public class Usuario {
             );
         }
 
-        this.avaliacao_media = media;
+        this.avaliacaoMedia = media;
     }
 
     public void alterarEndereco(Endereco novo_endereco){

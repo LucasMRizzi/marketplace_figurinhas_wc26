@@ -13,7 +13,7 @@ public class PosseFigurinha {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_posse")
-    private Long id_posse;
+    private Integer idPosse;
 
     @Column(name = "quantidade", nullable = false)
     private Integer quantidade;

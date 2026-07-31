@@ -19,7 +19,7 @@ public class Endereco {
     private Integer numero;
 
     @Column(name = "caixa_postal", nullable = false, length = 15)
-    private String caixa_postal;
+    private String caixaPostal;
 
     @Column(name = "cidade", nullable = false, length = 50)
     private String cidade;

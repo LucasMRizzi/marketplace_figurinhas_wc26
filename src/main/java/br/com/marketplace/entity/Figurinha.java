@@ -1,14 +1,14 @@
 package br.com.marketplace.entity;
 
+import br.com.marketplace.entity.enums.TipoFigurinha;
 import br.com.marketplace.entity.id.FigurinhaId;
-import jakarta.persistence.Column;
-import jakarta.persistence.EmbeddedId;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -28,7 +28,16 @@ public class Figurinha {
             precision = 10,
             scale = 2
     )
-    private BigDecimal valor_de_mercado;
+    private BigDecimal valorDeMercado;
+
+    @OneToMany(mappedBy = "figurinha")
+    private List<PosseFigurinha> posses = new ArrayList<>();
+
+    @OneToMany(mappedBy = "figurinha")
+    private List<DesejaFigurinha> desejos = new ArrayList<>();
+
+    @OneToMany(mappedBy = "figurinha")
+    private List<FigurinhaColada> coladas = new ArrayList<>();
 
     protected Figurinha(){
     }
@@ -39,6 +48,41 @@ public class Figurinha {
     ) {
         this.id = id;
         this.nome = nome;
-        this.valor_de_mercado = BigDecimal.ZERO;
+        this.valorDeMercado = BigDecimal.ZERO;
     }
+
+    public void atualizarDados(
+            String nome,
+            BigDecimal valorDeMercado
+    ) {
+        if(nome == null || nome.isBlank()){
+            throw new IllegalArgumentException(
+                    "O nome é obrigatório."
+            );
+        }
+
+        if(valorDeMercado == null){
+            throw new IllegalArgumentException(
+                    "O valor de mercado é obrigatório."
+            );
+        }
+
+        if(valorDeMercado.compareTo(BigDecimal.ZERO) < 0){
+            throw new IllegalArgumentException(
+                    "O valor de mercado não pode ser menor que 0."
+            );
+        }
+
+        this.nome = nome;
+        this.valorDeMercado = valorDeMercado;
+    }
+
+    public String getCodigo(){
+        return id.getCodigo();
+    }
+
+    public TipoFigurinha getTipo(){
+        return id.getTipo();
+    }
+
 }
