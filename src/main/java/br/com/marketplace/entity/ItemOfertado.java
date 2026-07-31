@@ -98,4 +98,37 @@ public class ItemOfertado {
         this.condicao = condicao;
         this.foto = foto;
     }
+    public void atualizar(
+            Integer quantidadeOfertada,
+            Condicao condicao,
+            String foto
+    ) {
+        if (quantidadeOfertada == null || quantidadeOfertada <= 0) {
+            throw new IllegalArgumentException(
+                    "A quantidade ofertada deve ser maior que zero."
+            );
+        }
+
+        if (quantidadeOfertada > posseFigurinha.getQuantidade()) {
+            throw new IllegalArgumentException(
+                    "A quantidade ofertada é maior que a quantidade possuída."
+            );
+        }
+
+        if (condicao == null) {
+            throw new IllegalArgumentException(
+                    "A condição é obrigatória."
+            );
+        }
+
+        if (foto != null && foto.length() > 255) {
+            throw new IllegalArgumentException(
+                    "A foto deve possuir no máximo 255 caracteres."
+            );
+        }
+
+        this.quantidadeOfertada = quantidadeOfertada;
+        this.condicao = condicao;
+        this.foto = foto;
+    }
 }

@@ -71,4 +71,14 @@ public class ItemSolicitado {
         this.figurinha = figurinha;
         this.quantidade = quantidade;
     }
+
+    public void alterarQuantidade(Integer quantidade) {
+        if (quantidade == null || quantidade <= 0) {
+            throw new IllegalArgumentException(
+                    "A quantidade deve ser maior que zero."
+            );
+        }
+
+        this.quantidade = quantidade;
+    }
 }
