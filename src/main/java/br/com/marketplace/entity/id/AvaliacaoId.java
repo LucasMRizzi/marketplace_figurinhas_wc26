@@ -30,5 +30,5 @@ public class AvaliacaoId implements Serializable {
     private String cpfAvaliado;
 
     @Column(name = "id_concretizacao")
-    private Long idConcretizacao;
+    private Integer idConcretizacao;
 }

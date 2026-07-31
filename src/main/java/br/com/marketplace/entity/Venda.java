@@ -16,7 +16,7 @@ public class Venda {
 
     @Id
     @Column(name = "id_oferta")
-    private Long idOferta;
+    private Integer idOferta;
 
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     @MapsId
@@ -45,14 +45,14 @@ public class Venda {
     @Column(name = "quantidade", nullable = false)
     private Integer quantidade;
 
+
+
     public Venda(
             Oferta oferta,
-            BigDecimal valorDaProposta,
             BigDecimal precoUnitario,
             Integer quantidade
     ) {
         validarOferta(oferta);
-        validarValor(valorDaProposta, "valor da proposta");
         validarValor(precoUnitario, "preço unitário");
 
         if (quantidade == null || quantidade <= 0) {
@@ -62,7 +62,7 @@ public class Venda {
         }
 
         this.oferta = oferta;
-        this.valorDaProposta = valorDaProposta;
+        this.valorDaProposta = precoUnitario.multiply(BigDecimal.valueOf(quantidade));
         this.precoUnitario = precoUnitario;
         this.quantidade = quantidade;
     }
@@ -74,7 +74,7 @@ public class Venda {
             );
         }
 
-        if (oferta.getTipo() != TipoOferta.Venda) {
+        if (oferta.getTipo() != TipoOferta.VENDA) {
             throw new IllegalArgumentException(
                     "A oferta deve ser do tipo venda."
             );
@@ -91,5 +91,15 @@ public class Venda {
                     "O " + campo + " não pode ser negativo."
             );
         }
+    }
+
+    public void atualizarVenda(
+            BigDecimal precoUnitario,
+            Integer quantidade
+    ) {
+        validarValor(precoUnitario, "preço unitário");
+        this.precoUnitario = precoUnitario;
+        this.valorDaProposta = precoUnitario.multiply(BigDecimal.valueOf(quantidade));
+        this.quantidade = quantidade;
     }
 }

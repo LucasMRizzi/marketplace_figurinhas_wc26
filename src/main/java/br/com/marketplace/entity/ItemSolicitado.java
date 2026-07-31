@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Table(
-        name = "item_solicitado",
+        name = "item_solicitado"
 )
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -16,7 +16,7 @@ public class ItemSolicitado {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_item_solicitado")
-    private Long idItemSolicitado;
+    private Integer idItemSolicitado;
 
     @Column(name = "quantidade", nullable = false)
     private Integer quantidade;
