@@ -13,6 +13,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ItemSolicitado {
 
+    /**
+     * =========================================================
+     * Variáveis
+     * =========================================================
+     */
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_item_solicitado")
@@ -20,6 +26,12 @@ public class ItemSolicitado {
 
     @Column(name = "quantidade", nullable = false)
     private Integer quantidade;
+
+    /**
+     * =========================================================
+     * Chaves Estrangeiras
+     * =========================================================
+     */
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumns({
@@ -44,28 +56,21 @@ public class ItemSolicitado {
     )
     private Troca troca;
 
+    /**
+     * =========================================================
+     * Métodos
+     * =========================================================
+     */
+
     public ItemSolicitado(
             Troca troca,
             Figurinha figurinha,
             Integer quantidade
     ) {
-        if (troca == null) {
-            throw new IllegalArgumentException(
-                    "A troca é obrigatória."
-            );
-        }
 
-        if (figurinha == null) {
-            throw new IllegalArgumentException(
-                    "A figurinha é obrigatória."
-            );
-        }
-
-        if (quantidade == null || quantidade <= 0) {
-            throw new IllegalArgumentException(
-                    "A quantidade deve ser maior que zero."
-            );
-        }
+        validarTroca(troca);
+        validarFigurinha(figurinha);
+        validarQuantidade(quantidade);
 
         this.troca = troca;
         this.figurinha = figurinha;
@@ -73,12 +78,40 @@ public class ItemSolicitado {
     }
 
     public void alterarQuantidade(Integer quantidade) {
+
+        validarQuantidade(quantidade);
+
+        this.quantidade = quantidade;
+    }
+
+    /**
+     * =========================================================
+     * Métodos Auxiliares
+     * =========================================================
+     */
+
+    private void validarQuantidade(Integer quantidade){
         if (quantidade == null || quantidade <= 0) {
             throw new IllegalArgumentException(
                     "A quantidade deve ser maior que zero."
             );
         }
-
-        this.quantidade = quantidade;
     }
+
+    private void validarFigurinha(Figurinha figurinha){
+        if (figurinha == null) {
+            throw new IllegalArgumentException(
+                    "A figurinha é obrigatória."
+            );
+        }
+    }
+
+    private void validarTroca(Troca troca){
+        if (troca == null) {
+            throw new IllegalArgumentException(
+                    "A troca é obrigatória."
+            );
+        }
+    }
+
 }

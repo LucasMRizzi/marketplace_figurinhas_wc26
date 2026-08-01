@@ -15,8 +15,34 @@ import java.time.LocalDate;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Avaliacao {
 
+    /**
+     * =========================================================
+     * Variáveis
+     * =========================================================
+     */
+
     @EmbeddedId
     private AvaliacaoId id;
+
+    @Column(
+            name = "nota",
+            nullable = false,
+            precision = 3,
+            scale = 2
+    )
+    private BigDecimal nota;
+
+    @Column(name = "comentario", length = 150)
+    private String comentario;
+
+    @Column(name = "data", nullable = false)
+    private LocalDate data;
+
+    /**
+     * =========================================================
+     * Chaves Estrangeiras
+     * =========================================================
+     */
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @MapsId("cpfAvaliador")
@@ -45,19 +71,12 @@ public class Avaliacao {
     )
     private Concretizacao concretizacao;
 
-    @Column(
-            name = "nota",
-            nullable = false,
-            precision = 3,
-            scale = 2
-    )
-    private BigDecimal nota;
 
-    @Column(name = "comentario", length = 150)
-    private String comentario;
-
-    @Column(name = "data", nullable = false)
-    private LocalDate data;
+    /**
+     * =========================================================
+     * Métodos
+     * =========================================================
+     */
 
     public Avaliacao(
             Usuario usuarioAvaliador,
@@ -106,6 +125,12 @@ public class Avaliacao {
         this.comentario = novoComentario;
     }
 
+    /**
+     * =========================================================
+     * Métodos Auxiliares
+     * =========================================================
+     */
+
     private void validarNota(BigDecimal nota) {
         if (nota == null
                 || nota.compareTo(BigDecimal.ZERO) < 0
@@ -149,6 +174,8 @@ public class Avaliacao {
                     "Um usuário não pode avaliar a si mesmo."
             );
         }
+
+        //TODO: corrigir essas chamas encadeadas
 
         Usuario proponente =
                 concretizacao

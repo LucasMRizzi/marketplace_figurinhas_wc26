@@ -2,17 +2,32 @@ package br.com.marketplace.entity;
 
 import br.com.marketplace.entity.id.DesejaFigurinhaId;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(name = "deseja_figurinha")
 public class DesejaFigurinha {
 
+    /**
+     * =========================================================
+     * Variáveis
+     * =========================================================
+     */
+
     @EmbeddedId
     private DesejaFigurinhaId id;
+
+    /**
+     * =========================================================
+     * Chaves Estrangeiras
+     * =========================================================
+     */
 
     @MapsId("figurinhaId")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -36,8 +51,11 @@ public class DesejaFigurinha {
     )
     private Usuario usuario;
 
-    protected DesejaFigurinha(){
-    }
+    /**
+     * =========================================================
+     * Métodos
+     * =========================================================
+     */
 
     public DesejaFigurinha(
             Usuario usuario,

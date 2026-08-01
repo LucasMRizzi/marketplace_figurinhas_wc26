@@ -17,17 +17,15 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Troca {
 
+    /**
+     * =========================================================
+     * Variáveis
+     * =========================================================
+     */
+
     @Id
     @Column(name = "id_oferta")
     private Integer idOferta;
-
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
-    @MapsId
-    @JoinColumn(
-            name = "id_oferta",
-            referencedColumnName = "id_oferta"
-    )
-    private Oferta oferta;
 
     @Column(
             name = "valor_de_mercado",
@@ -47,13 +45,38 @@ public class Troca {
     )
     private String descricao;
 
+    /**
+     * =========================================================
+     * Chaves Estrangeiras
+     * =========================================================
+     */
+
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @MapsId
+    @JoinColumn(
+            name = "id_oferta",
+            referencedColumnName = "id_oferta"
+    )
+    private Oferta oferta;
+
+    /**
+     * =========================================================
+     * Relações
+     * =========================================================
+     */
+
     @OneToMany(
             mappedBy = "troca",
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    private List<ItemSolicitado> itensSolicitados =
-            new ArrayList<>();
+    private List<ItemSolicitado> itensSolicitados = new ArrayList<>();
+
+    /**
+     * =========================================================
+     * Métodos
+     * =========================================================
+     */
 
     public Troca(
             Oferta oferta,
@@ -61,31 +84,15 @@ public class Troca {
             String descricao
     ) {
         validarOferta(oferta);
+        validarPrazoLimite(prazoLimite);
+        validarDescricao(descricao);
 
-        /*if (valorDeMercado == null
+        /*TODO: if (valorDeMercado == null
                 || valorDeMercado.compareTo(BigDecimal.ZERO) < 0) {
             throw new IllegalArgumentException(
                     "O valor de mercado não pode ser negativo."
             );
         }*/
-
-        if (prazoLimite == null) {
-            throw new IllegalArgumentException(
-                    "O prazo limite é obrigatório."
-            );
-        }
-
-        if (descricao == null || descricao.isBlank()) {
-            throw new IllegalArgumentException(
-                    "A descrição é obrigatória."
-            );
-        }
-
-        if (descricao.length() > 140) {
-            throw new IllegalArgumentException(
-                    "A descrição deve possuir no máximo 140 caracteres."
-            );
-        }
 
         this.oferta = oferta;
         //TODO: this.valorDeMercado = calcularValorDeMercado();
@@ -93,6 +100,23 @@ public class Troca {
         this.prazoLimite = prazoLimite;
         this.descricao = descricao;
     }
+
+    public void atualizar(
+            LocalDate prazoLimite,
+            String descricao
+    ) {
+        validarPrazoLimite(prazoLimite);
+        validarDescricao(descricao);
+
+        this.prazoLimite = prazoLimite;
+        this.descricao = descricao;
+    }
+
+    /**
+     * =========================================================
+     * Métodos Auxiliares
+     * =========================================================
+     */
 
     private void validarOferta(Oferta oferta) {
         if (oferta == null) {
@@ -108,35 +132,31 @@ public class Troca {
         }
     }
 
-    public void atualizar(
-            LocalDate prazoLimite,
-            String descricao
-    ) {
+    private void validarPrazoLimite(LocalDate prazoLimite) {
         if (prazoLimite == null) {
             throw new IllegalArgumentException(
-                    "A data é obrigatória."
+                    "O prazo limite é obrigatório."
             );
         }
 
         if (prazoLimite.isBefore(LocalDate.now())) {
             throw new IllegalArgumentException(
-                    "A data não pode ser anterior à data atual."
+                    "O prazo limite não pode ser anterior à data atual."
             );
         }
+    }
 
+    private void validarDescricao(String descricao) {
         if (descricao == null) {
             throw new IllegalArgumentException(
-                    "A descricão é obrigatória ou deve estar em branco."
+                    "A descrição é obrigatória. Caso não exista, informe uma string vazia."
             );
         }
 
         if (descricao.length() > 140) {
             throw new IllegalArgumentException(
-                    "A descrição não pode ser maior que 140 caracteres."
+                    "A descrição não pode ter mais de 140 caracteres."
             );
         }
-
-        this.prazoLimite = prazoLimite;
-        this.descricao = descricao;
     }
 }

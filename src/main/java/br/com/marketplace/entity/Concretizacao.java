@@ -18,6 +18,12 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Concretizacao {
 
+    /**
+     * =========================================================
+     * Variáveis
+     * =========================================================
+     */
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_concretizacao")
@@ -34,6 +40,12 @@ public class Concretizacao {
 
     @Column(name = "data_do_aceite", nullable = false)
     private LocalDate dataAceite;
+
+    /**
+     * =========================================================
+     * Chaves Estrangeiras
+     * =========================================================
+     */
 
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(
@@ -52,13 +64,24 @@ public class Concretizacao {
     )
     private Usuario aceitante;
 
+    /**
+     * =========================================================
+     * Relações
+     * =========================================================
+     */
+
     @OneToMany(
             mappedBy = "concretizacao",
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    private List<Avaliacao> avaliacoes =
-            new ArrayList<>();
+    private List<Avaliacao> avaliacoes = new ArrayList<>();
+
+    /**
+     * =========================================================
+     * Métodos
+     * =========================================================
+     */
 
     public Concretizacao(
             Oferta oferta,

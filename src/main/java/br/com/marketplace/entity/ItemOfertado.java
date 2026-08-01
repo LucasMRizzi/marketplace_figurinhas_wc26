@@ -15,20 +15,23 @@ import org.hibernate.type.SqlTypes;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ItemOfertado {
 
+    /**
+     * =========================================================
+     * Variáveis
+     * =========================================================
+     */
+
     @EmbeddedId
     private ItemOfertadoId id;
 
-    @MapsId("idOferta")
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(
-            name = "id_oferta",
-            referencedColumnName = "id_oferta",
-            nullable = false
-    )
-    private Oferta oferta;
-
     @Column(name = "foto", length = 255)
     private String foto;
+
+    @Column(
+            name = "quantidade_ofertada",
+            nullable = false
+    )
+    private Integer quantidadeOfertada;
 
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
@@ -39,12 +42,27 @@ public class ItemOfertado {
     )
     private Condicao condicao;
 
-    @Column(
-            name = "quantidade_ofertada",
+    /**
+     * =========================================================
+     * Chaves Estrangeiras
+     * =========================================================
+     */
+
+    /**
+     * Chave para tabela oferta
+     */
+    @MapsId("idOferta")
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(
+            name = "id_oferta",
+            referencedColumnName = "id_oferta",
             nullable = false
     )
-    private Integer quantidadeOfertada;
+    private Oferta oferta;
 
+    /**
+     * Chave para tabela possui_figurinha
+     */
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(
             name = "id_posse",
@@ -53,6 +71,12 @@ public class ItemOfertado {
     )
     private PosseFigurinha posseFigurinha;
 
+    /**
+     * =========================================================
+     * Métodos
+     * =========================================================
+     */
+
     public ItemOfertado(
             Oferta oferta,
             PosseFigurinha posseFigurinha,
@@ -60,37 +84,10 @@ public class ItemOfertado {
             Condicao condicao,
             String foto
     ) {
-        if (oferta == null) {
-            throw new IllegalArgumentException(
-                    "A oferta é obrigatória."
-            );
-        }
-
-        if (posseFigurinha == null) {
-            throw new IllegalArgumentException(
-                    "A posse da figurinha é obrigatória."
-            );
-        }
-
-        if (quantidadeOfertada == null
-                || quantidadeOfertada <= 0) {
-            throw new IllegalArgumentException(
-                    "A quantidade ofertada deve ser maior que zero."
-            );
-        }
-
-        if (quantidadeOfertada
-                > posseFigurinha.getQuantidade()) {
-            throw new IllegalArgumentException(
-                    "A quantidade ofertada é maior que a quantidade possuída."
-            );
-        }
-
-        if (condicao == null) {
-            throw new IllegalArgumentException(
-                    "A condição é obrigatória."
-            );
-        }
+        validarOferta(oferta);
+        validarPosse(posseFigurinha);
+        validarQuantidade(quantidadeOfertada, posseFigurinha);
+        validarCondicao(condicao);
 
         this.oferta = oferta;
         this.posseFigurinha = posseFigurinha;
@@ -98,11 +95,52 @@ public class ItemOfertado {
         this.condicao = condicao;
         this.foto = foto;
     }
+
     public void atualizar(
             Integer quantidadeOfertada,
             Condicao condicao,
             String foto
     ) {
+        validarQuantidade(quantidadeOfertada, this.posseFigurinha);
+        validarCondicao(condicao);
+        validarFoto(foto);
+
+        this.quantidadeOfertada = quantidadeOfertada;
+        this.condicao = condicao;
+        this.foto = foto;
+    }
+
+    /**
+     * =========================================================
+     * Métodos auxiliares
+     * =========================================================
+     */
+
+    private void validarCondicao(Condicao condicao){
+        if (condicao == null) {
+            throw new IllegalArgumentException(
+                    "A condição é obrigatória."
+            );
+        }
+    }
+
+    private void validarOferta(Oferta oferta){
+        if (oferta == null) {
+            throw new IllegalArgumentException(
+                    "A oferta é obrigatória."
+            );
+        }
+    }
+
+    private void validarPosse(PosseFigurinha posseFigurinha){
+        if (posseFigurinha == null) {
+            throw new IllegalArgumentException(
+                    "A posse da figurinha é obrigatória."
+            );
+        }
+    }
+
+    private void validarQuantidade(Integer quantidade, PosseFigurinha posseFigurinha){
         if (quantidadeOfertada == null || quantidadeOfertada <= 0) {
             throw new IllegalArgumentException(
                     "A quantidade ofertada deve ser maior que zero."
@@ -114,21 +152,13 @@ public class ItemOfertado {
                     "A quantidade ofertada é maior que a quantidade possuída."
             );
         }
+    }
 
-        if (condicao == null) {
-            throw new IllegalArgumentException(
-                    "A condição é obrigatória."
-            );
-        }
-
+    private void validarFoto(String foto){
         if (foto != null && foto.length() > 255) {
             throw new IllegalArgumentException(
                     "A foto deve possuir no máximo 255 caracteres."
             );
         }
-
-        this.quantidadeOfertada = quantidadeOfertada;
-        this.condicao = condicao;
-        this.foto = foto;
     }
 }

@@ -2,7 +2,9 @@ package br.com.marketplace.entity;
 
 import br.com.marketplace.entity.id.AlbumId;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
@@ -12,6 +14,7 @@ import java.util.List;
 
 @Getter
 @Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(name = "album")
 public class Album {
@@ -21,6 +24,12 @@ public class Album {
 
     private static final BigDecimal COMPLETUDE_MAXIMA =
             new BigDecimal("100.00");
+
+    /**
+     * =========================================================
+     * Variáveis
+     * =========================================================
+     */
 
     @EmbeddedId
     private AlbumId id;
@@ -32,6 +41,12 @@ public class Album {
             scale = 2
     )
     private BigDecimal completude;
+
+    /**
+     * =========================================================
+     * Chaves Estrangeiras
+     * =========================================================
+     */
 
     @MapsId("usuario")
     @ManyToOne(
@@ -45,11 +60,20 @@ public class Album {
     )
     private Usuario usuario;
 
+    /**
+     * =========================================================
+     * Relações
+     * =========================================================
+     */
+
     @OneToMany(mappedBy = "album")
     private List<FigurinhaColada> figurinhasColadas = new ArrayList<>();
 
-    protected Album(){
-    }
+    /**
+     * =========================================================
+     * Métodos
+     * =========================================================
+     */
 
     public Album(
             String nome,
@@ -82,6 +106,12 @@ public class Album {
                 RoundingMode.HALF_UP
         );
     }
+
+    /**
+     * =========================================================
+     * Métodos Auxiliares
+     * =========================================================
+     */
 
     private void validarNome(String nome){
         if(nome == null || nome.isBlank()) {

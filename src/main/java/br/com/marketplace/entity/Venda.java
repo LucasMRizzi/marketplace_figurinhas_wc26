@@ -14,17 +14,17 @@ import java.math.BigDecimal;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Venda {
 
+    //TODO: atualizar preco unitario e quantidade para o dos itens ofertados
+
+    /**
+     * =========================================================
+     * Variáveis
+     * =========================================================
+     */
+
     @Id
     @Column(name = "id_oferta")
     private Integer idOferta;
-
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
-    @MapsId
-    @JoinColumn(
-            name = "id_oferta",
-            referencedColumnName = "id_oferta"
-    )
-    private Oferta oferta;
 
     @Column(
             name = "valor_da_proposta",
@@ -45,7 +45,25 @@ public class Venda {
     @Column(name = "quantidade", nullable = false)
     private Integer quantidade;
 
+    /**
+     * =========================================================
+     * Chave Estrangeira
+     * =========================================================
+     */
 
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @MapsId
+    @JoinColumn(
+            name = "id_oferta",
+            referencedColumnName = "id_oferta"
+    )
+    private Oferta oferta;
+
+    /**
+     * =========================================================
+     * Métodos
+     * =========================================================
+     */
 
     public Venda(
             Oferta oferta,
@@ -66,6 +84,22 @@ public class Venda {
         this.precoUnitario = precoUnitario;
         this.quantidade = quantidade;
     }
+
+    public void atualizarVenda(
+            BigDecimal precoUnitario,
+            Integer quantidade
+    ) {
+        validarValor(precoUnitario, "preço unitário");
+        this.precoUnitario = precoUnitario;
+        this.valorDaProposta = precoUnitario.multiply(BigDecimal.valueOf(quantidade));
+        this.quantidade = quantidade;
+    }
+
+    /**
+     * =========================================================
+     * Métodos Auxiliares
+     * =========================================================
+     */
 
     private void validarOferta(Oferta oferta) {
         if (oferta == null) {
@@ -93,13 +127,5 @@ public class Venda {
         }
     }
 
-    public void atualizarVenda(
-            BigDecimal precoUnitario,
-            Integer quantidade
-    ) {
-        validarValor(precoUnitario, "preço unitário");
-        this.precoUnitario = precoUnitario;
-        this.valorDaProposta = precoUnitario.multiply(BigDecimal.valueOf(quantidade));
-        this.quantidade = quantidade;
-    }
+
 }

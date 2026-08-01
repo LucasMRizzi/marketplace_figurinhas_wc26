@@ -12,6 +12,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Endereco {
 
+    /**
+     * =========================================================
+     * Variáveis
+     * =========================================================
+     */
+
     @Column(name = "logradouro", nullable = false, length = 100)
     private String logradouro;
 

@@ -3,7 +3,9 @@ package br.com.marketplace.entity;
 import br.com.marketplace.entity.enums.TipoFigurinha;
 import br.com.marketplace.entity.id.FigurinhaId;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
@@ -12,9 +14,16 @@ import java.util.List;
 
 @Getter
 @Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(name = "figurinha")
 public class Figurinha {
+
+    /**
+     * =========================================================
+     * Variáveis
+     * =========================================================
+     */
 
     @EmbeddedId
     private FigurinhaId id;
@@ -30,6 +39,12 @@ public class Figurinha {
     )
     private BigDecimal valorDeMercado;
 
+    /**
+     * =========================================================
+     * Relações
+     * =========================================================
+     */
+
     @OneToMany(mappedBy = "figurinha")
     private List<PosseFigurinha> posses = new ArrayList<>();
 
@@ -39,8 +54,11 @@ public class Figurinha {
     @OneToMany(mappedBy = "figurinha")
     private List<FigurinhaColada> coladas = new ArrayList<>();
 
-    protected Figurinha(){
-    }
+    /**
+     * =========================================================
+     * Métodos
+     * =========================================================
+     */
 
     public Figurinha(
             FigurinhaId id,

@@ -19,6 +19,12 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Oferta {
 
+    /**
+     * =========================================================
+     * Variáveis
+     * =========================================================
+     */
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_oferta")
@@ -45,6 +51,12 @@ public class Oferta {
     @Column(name = "data_criacao", nullable = false)
     private LocalDate dataCriacao;
 
+    /**
+     * =========================================================
+     * Chaves estrangeiras
+     * =========================================================
+     */
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(
             name = "usuario_proponente",
@@ -52,6 +64,12 @@ public class Oferta {
             nullable = false
     )
     private Usuario usuarioProponente;
+
+    /**
+     * =========================================================
+     * Relações
+     * =========================================================
+     */
 
     @OneToOne(
             mappedBy = "oferta",
@@ -81,6 +99,12 @@ public class Oferta {
             orphanRemoval = true
     )
     private List<ItemOfertado> itensOfertados = new ArrayList<>();
+
+    /**
+     * =========================================================
+     * Métodos
+     * =========================================================
+     */
 
     public Oferta(
             TipoOferta tipo,

@@ -1,14 +1,23 @@
 package br.com.marketplace.entity;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(name = "possui_figurinha")
 public class PosseFigurinha {
+
+    /**
+     * =========================================================
+     * Variáveis
+     * =========================================================
+     */
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,6 +26,12 @@ public class PosseFigurinha {
 
     @Column(name = "quantidade", nullable = false)
     private Integer quantidade;
+
+    /**
+     * =========================================================
+     * Chaves Estrangeiras
+     * =========================================================
+     */
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(
@@ -41,9 +56,11 @@ public class PosseFigurinha {
     })
     private Figurinha figurinha;
 
-    protected PosseFigurinha(){
-
-    }
+    /**
+     * =========================================================
+     * Métodos
+     * =========================================================
+     */
 
     public PosseFigurinha(
             Usuario usuario,
@@ -56,37 +73,43 @@ public class PosseFigurinha {
     }
 
     public void adicionarQuantidade(int quantidade){
-        if(quantidade <= 0){
-            throw new IllegalArgumentException(
-                    "A quantidade adicionada deve ser maior que zero"
-            );
-        }
+        validarQuantidade(quantidade);
 
         this.quantidade += quantidade;
     }
 
     public void removerQuantidade(int quantidade){
-        if(quantidade <= 0){
-            throw new IllegalArgumentException(
-                    "A quantidade adicionada deve ser maior que zero"
-            );
-        }
-        if(quantidade > this.quantidade){
-            throw new IllegalArgumentException(
-                    "Quantidade insuficiente de figurinhas"
-            );
-        }
+        validarQuantidade(quantidade);
+        validarQuantidadeSuficiente(quantidade);
 
         this.quantidade -= quantidade;
     }
 
     public void alterarQuantidade(int quantidade) {
+        validarQuantidade(quantidade);
+
+        this.quantidade = quantidade;
+    }
+
+    /**
+     * =========================================================
+     * Métodos Auxiliares
+     * =========================================================
+     */
+
+    private void validarQuantidade(Integer quantidade){
         if (quantidade < 0) {
             throw new IllegalArgumentException(
                     "A quantidade não pode ser negativa"
             );
         }
+    }
 
-        this.quantidade = quantidade;
+    private void validarQuantidadeSuficiente(Integer quantidade){
+        if(quantidade > this.quantidade){
+            throw new IllegalArgumentException(
+                    "Quantidade insuficiente de figurinhas"
+            );
+        }
     }
 }
