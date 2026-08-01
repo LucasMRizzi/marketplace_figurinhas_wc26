@@ -2,6 +2,7 @@ package br.com.marketplace.repository;
 
 import br.com.marketplace.entity.PosseFigurinha;
 import br.com.marketplace.entity.enums.TipoFigurinha;
+import br.com.marketplace.entity.id.FigurinhaId;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -23,4 +24,10 @@ public interface PosseFigurinhaRepository extends JpaRepository<PosseFigurinha, 
     );
 
     List<PosseFigurinha> findByUsuarioCpf(String cpf);
+
+    boolean
+    existsByUsuarioCpfAndFigurinhaId(
+            String cpf,
+            FigurinhaId figurinhaId
+    );
 }

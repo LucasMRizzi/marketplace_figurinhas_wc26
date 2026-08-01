@@ -1,4 +1,4 @@
-package br.com.marketplace.dto.itemsolicitado;
+package br.com.marketplace.dto.itemSolicitado;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;

@@ -1,4 +1,4 @@
-package br.com.marketplace.dto.itemofertado;
+package br.com.marketplace.dto.itemOfertado;
 
 import br.com.marketplace.entity.enums.Condicao;
 import jakarta.validation.constraints.NotNull;
@@ -8,7 +8,7 @@ import jakarta.validation.constraints.Size;
 public record CriarItemOfertadoRequest(
 
         @NotNull(message = "O ID da posse é obrigatório.")
-        Long idPosse,
+        Integer idPosse,
 
         @NotNull(message = "A quantidade é obrigatória.")
         @Positive(message = "A quantidade deve ser maior que zero.")

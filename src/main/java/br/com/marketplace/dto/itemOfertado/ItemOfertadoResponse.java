@@ -1,14 +1,13 @@
-package br.com.marketplace.dto.itemofertado;
+package br.com.marketplace.dto.itemOfertado;
 
 import br.com.marketplace.entity.enums.Condicao;
 import br.com.marketplace.entity.enums.TipoFigurinha;
 
 public record ItemOfertadoResponse(
-        Long idItem,
-        Long idOferta,
-        Long idPosse,
-        String codigoFigurinha,
-        TipoFigurinha tipoFigurinha,
+        Integer idItem,
+        Integer idOferta,
+        Integer idPosse,
+        String nomeFigurinha,
         Integer quantidadeOfertada,
         Condicao condicao,
         String foto

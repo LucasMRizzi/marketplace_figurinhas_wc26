@@ -1,7 +1,6 @@
 package br.com.marketplace.entity;
 
 import br.com.marketplace.entity.enums.Condicao;
-import br.com.marketplace.entity.id.ItemOfertadoId;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -21,8 +20,10 @@ public class ItemOfertado {
      * =========================================================
      */
 
-    @EmbeddedId
-    private ItemOfertadoId id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_item")
+    private Integer idItem;
 
     @Column(name = "foto", length = 255)
     private String foto;
@@ -51,7 +52,6 @@ public class ItemOfertado {
     /**
      * Chave para tabela oferta
      */
-    @MapsId("idOferta")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(
             name = "id_oferta",
@@ -110,6 +110,19 @@ public class ItemOfertado {
         this.foto = foto;
     }
 
+    public Integer getIdOferta(){
+        return this.oferta.getIdOferta();
+    }
+
+    public Integer getIdPosse(){
+        return this.posseFigurinha.getIdPosse();
+    }
+
+    public String getNomeFigurinha(){
+        return this.posseFigurinha.getNomeFigurinha();
+    }
+
+
     /**
      * =========================================================
      * Métodos auxiliares
@@ -140,7 +153,7 @@ public class ItemOfertado {
         }
     }
 
-    private void validarQuantidade(Integer quantidade, PosseFigurinha posseFigurinha){
+    private void validarQuantidade(Integer quantidadeOfertada, PosseFigurinha posseFigurinha){
         if (quantidadeOfertada == null || quantidadeOfertada <= 0) {
             throw new IllegalArgumentException(
                     "A quantidade ofertada deve ser maior que zero."

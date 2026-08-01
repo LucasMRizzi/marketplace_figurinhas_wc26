@@ -1,8 +1,8 @@
 package br.com.marketplace.mapper;
 
-import br.com.marketplace.dto.itemofertado.AtualizarItemOfertadoRequest;
-import br.com.marketplace.dto.itemofertado.CriarItemOfertadoRequest;
-import br.com.marketplace.dto.itemofertado.ItemOfertadoResponse;
+import br.com.marketplace.dto.itemOfertado.AtualizarItemOfertadoRequest;
+import br.com.marketplace.dto.itemOfertado.CriarItemOfertadoRequest;
+import br.com.marketplace.dto.itemOfertado.ItemOfertadoResponse;
 import br.com.marketplace.entity.ItemOfertado;
 import br.com.marketplace.entity.Oferta;
 import br.com.marketplace.entity.PosseFigurinha;
@@ -28,16 +28,9 @@ public class ItemOfertadoMapper {
     public ItemOfertadoResponse toResponse(ItemOfertado item) {
         return new ItemOfertadoResponse(
                 item.getIdItem(),
-                item.getOferta().getIdOferta(),
-                item.getPosseFigurinha().getId_posse(),
-                item.getPosseFigurinha()
-                        .getFigurinha()
-                        .getId()
-                        .getCodigo(),
-                item.getPosseFigurinha()
-                        .getFigurinha()
-                        .getId()
-                        .getTipo(),
+                item.getIdOferta(),
+                item.getIdPosse(),
+                item.getNomeFigurinha(),
                 item.getQuantidadeOfertada(),
                 item.getCondicao(),
                 item.getFoto()

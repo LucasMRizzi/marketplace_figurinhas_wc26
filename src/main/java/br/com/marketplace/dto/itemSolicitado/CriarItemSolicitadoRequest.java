@@ -1,4 +1,4 @@
-package br.com.marketplace.dto.itemsolicitado;
+package br.com.marketplace.dto.itemSolicitado;
 
 import br.com.marketplace.entity.enums.TipoFigurinha;
 import jakarta.validation.constraints.NotBlank;

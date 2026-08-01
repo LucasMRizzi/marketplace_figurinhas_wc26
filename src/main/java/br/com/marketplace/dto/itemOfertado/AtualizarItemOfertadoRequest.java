@@ -1,4 +1,4 @@
-package br.com.marketplace.dto.itemofertado;
+package br.com.marketplace.dto.itemOfertado;
 
 import br.com.marketplace.entity.enums.Condicao;
 import jakarta.validation.constraints.NotNull;

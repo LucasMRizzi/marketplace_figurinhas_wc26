@@ -107,6 +107,14 @@ public class Album {
         );
     }
 
+    public String getNome(){
+        return this.id.getNome();
+    }
+
+    public String getCpfUsuario(){
+        return this.id.getUsuario();
+    }
+
     /**
      * =========================================================
      * Métodos Auxiliares

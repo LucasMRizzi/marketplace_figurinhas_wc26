@@ -1,10 +1,10 @@
-package br.com.marketplace.dto.itemsolicitado;
+package br.com.marketplace.dto.itemSolicitado;
 
 import br.com.marketplace.entity.enums.TipoFigurinha;
 
 public record ItemSolicitadoResponse(
-        Long idItemSolicitado,
-        Long idOferta,
+        Integer idItemSolicitado,
+        Integer idOferta,
         String codigoFigurinha,
         TipoFigurinha tipoFigurinha,
         String nomeFigurinha,

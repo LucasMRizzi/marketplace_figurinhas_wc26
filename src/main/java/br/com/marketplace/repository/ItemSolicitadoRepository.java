@@ -9,7 +9,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface ItemSolicitadoRepository
-        extends JpaRepository<ItemSolicitado, Long> {
+        extends JpaRepository<ItemSolicitado, Integer> {
 
     @Query("""
             SELECT item
@@ -18,7 +18,7 @@ public interface ItemSolicitadoRepository
             ORDER BY item.idItemSolicitado
             """)
     List<ItemSolicitado> buscarTodosPorTroca(
-            @Param("idOferta") Long idOferta
+            @Param("idOferta") Integer idOferta
     );
 
     @Query("""
@@ -29,7 +29,7 @@ public interface ItemSolicitadoRepository
               AND item.figurinha.id.tipo = :tipo
             """)
     boolean existeFigurinhaNaTroca(
-            @Param("idOferta") Long idOferta,
+            @Param("idOferta") Integer idOferta,
             @Param("codigo") String codigo,
             @Param("tipo") TipoFigurinha tipo
     );

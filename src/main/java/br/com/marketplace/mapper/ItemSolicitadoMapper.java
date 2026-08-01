@@ -1,8 +1,8 @@
 package br.com.marketplace.mapper;
 
-import br.com.marketplace.dto.itemsolicitado.AtualizarItemSolicitadoRequest;
-import br.com.marketplace.dto.itemsolicitado.CriarItemSolicitadoRequest;
-import br.com.marketplace.dto.itemsolicitado.ItemSolicitadoResponse;
+import br.com.marketplace.dto.itemSolicitado.AtualizarItemSolicitadoRequest;
+import br.com.marketplace.dto.itemSolicitado.CriarItemSolicitadoRequest;
+import br.com.marketplace.dto.itemSolicitado.ItemSolicitadoResponse;
 import br.com.marketplace.entity.Figurinha;
 import br.com.marketplace.entity.ItemSolicitado;
 import br.com.marketplace.entity.Troca;

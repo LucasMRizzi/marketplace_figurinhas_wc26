@@ -1,8 +1,8 @@
 package br.com.marketplace.controller;
 
-import br.com.marketplace.dto.itemofertado.AtualizarItemOfertadoRequest;
-import br.com.marketplace.dto.itemofertado.CriarItemOfertadoRequest;
-import br.com.marketplace.dto.itemofertado.ItemOfertadoResponse;
+import br.com.marketplace.dto.itemOfertado.AtualizarItemOfertadoRequest;
+import br.com.marketplace.dto.itemOfertado.CriarItemOfertadoRequest;
+import br.com.marketplace.dto.itemOfertado.ItemOfertadoResponse;
 import br.com.marketplace.service.ItemOfertadoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +23,7 @@ public class ItemOfertadoController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ItemOfertadoResponse criar(
-            @PathVariable Long idOferta,
+            @PathVariable Integer idOferta,
             @Valid
             @RequestBody CriarItemOfertadoRequest request
     ) {
@@ -35,7 +35,7 @@ public class ItemOfertadoController {
 
     @GetMapping
     public List<ItemOfertadoResponse> listar(
-            @PathVariable Long idOferta
+            @PathVariable Integer idOferta
     ) {
         return itemOfertadoService
                 .listarPorOferta(idOferta);
@@ -43,8 +43,8 @@ public class ItemOfertadoController {
 
     @GetMapping("/{idItem}")
     public ItemOfertadoResponse buscar(
-            @PathVariable Long idOferta,
-            @PathVariable Long idItem
+            @PathVariable Integer idOferta,
+            @PathVariable Integer idItem
     ) {
         return itemOfertadoService.buscar(
                 idOferta,
@@ -54,8 +54,8 @@ public class ItemOfertadoController {
 
     @PutMapping("/{idItem}")
     public ItemOfertadoResponse atualizar(
-            @PathVariable Long idOferta,
-            @PathVariable Long idItem,
+            @PathVariable Integer idOferta,
+            @PathVariable Integer idItem,
             @Valid
             @RequestBody AtualizarItemOfertadoRequest request
     ) {
@@ -69,8 +69,8 @@ public class ItemOfertadoController {
     @DeleteMapping("/{idItem}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void remover(
-            @PathVariable Long idOferta,
-            @PathVariable Long idItem
+            @PathVariable Integer idOferta,
+            @PathVariable Integer idItem
     ) {
         itemOfertadoService.remover(
                 idOferta,

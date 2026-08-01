@@ -8,8 +8,13 @@ import java.util.List;
 
 public interface FigurinhaColadaRepository extends JpaRepository<FigurinhaColada, FigurinhaColadaId> {
     List<FigurinhaColada>
-    findByAlbumIdNomeAndAlbumIdUsuario(
+    findByAlbum_Id_NomeAndAlbum_Id_Usuario(
             String nomeAlbum,
             String usuario
+    );
+
+    long countByAlbum_Id_NomeAndAlbum_Id_Usuario(
+            String nomeAlbum,
+            String cpfUsuario
     );
 }

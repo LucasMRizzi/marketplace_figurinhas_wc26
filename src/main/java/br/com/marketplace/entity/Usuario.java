@@ -128,28 +128,17 @@ public class Usuario {
     }
 
     public void atualizarAvaliacaoMedia(
-            BigDecimal somaDasAvaliacoes,
-            long quantidadeDeAvaliacoes
+            BigDecimal novaAvaliacaoMedia
     ) {
-        if(quantidadeDeAvaliacoes <= 0){
-            this.avaliacaoMedia = BigDecimal.ZERO;
-            return;
-        }
 
-        BigDecimal media = somaDasAvaliacoes.divide(
-                BigDecimal.valueOf(quantidadeDeAvaliacoes),
-                2,
-                RoundingMode.HALF_UP
-        );
-
-        if(media.compareTo(BigDecimal.ZERO) < 0
-                || media.compareTo(BigDecimal.valueOf(5)) > 0){
+        if(novaAvaliacaoMedia.compareTo(BigDecimal.ZERO) < 0
+                || novaAvaliacaoMedia.compareTo(BigDecimal.valueOf(5)) > 0){
             throw new IllegalArgumentException(
-                    "A avaliação média deve estar entre 0 e 5."
+                    "A avaliação média deve estar entre 0.00 e 5.00."
             );
         }
 
-        this.avaliacaoMedia = media;
+        this.avaliacaoMedia = novaAvaliacaoMedia;
     }
 
     public void alterarEndereco(Endereco novo_endereco){

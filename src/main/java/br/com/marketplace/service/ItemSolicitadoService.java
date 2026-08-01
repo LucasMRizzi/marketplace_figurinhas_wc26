@@ -1,8 +1,8 @@
 package br.com.marketplace.service;
 
-import br.com.marketplace.dto.itemsolicitado.AtualizarItemSolicitadoRequest;
-import br.com.marketplace.dto.itemsolicitado.CriarItemSolicitadoRequest;
-import br.com.marketplace.dto.itemsolicitado.ItemSolicitadoResponse;
+import br.com.marketplace.dto.itemSolicitado.AtualizarItemSolicitadoRequest;
+import br.com.marketplace.dto.itemSolicitado.CriarItemSolicitadoRequest;
+import br.com.marketplace.dto.itemSolicitado.ItemSolicitadoResponse;
 import br.com.marketplace.entity.Figurinha;
 import br.com.marketplace.entity.ItemSolicitado;
 import br.com.marketplace.entity.Troca;
@@ -30,7 +30,7 @@ public class ItemSolicitadoService {
 
     @Transactional
     public ItemSolicitadoResponse criar(
-            Long idOferta,
+            Integer idOferta,
             CriarItemSolicitadoRequest request
     ) {
         Troca troca = buscarTroca(idOferta);
@@ -77,7 +77,7 @@ public class ItemSolicitadoService {
 
     @Transactional(readOnly = true)
     public List<ItemSolicitadoResponse> listarPorTroca(
-            Long idOferta
+            Integer idOferta
     ) {
         buscarTroca(idOferta);
 
@@ -90,8 +90,8 @@ public class ItemSolicitadoService {
 
     @Transactional(readOnly = true)
     public ItemSolicitadoResponse buscar(
-            Long idOferta,
-            Long idItemSolicitado
+            Integer idOferta,
+            Integer idItemSolicitado
     ) {
         return itemSolicitadoMapper.toResponse(
                 buscarEntidade(idOferta, idItemSolicitado)
@@ -100,8 +100,8 @@ public class ItemSolicitadoService {
 
     @Transactional
     public ItemSolicitadoResponse atualizar(
-            Long idOferta,
-            Long idItemSolicitado,
+            Integer idOferta,
+            Integer idItemSolicitado,
             AtualizarItemSolicitadoRequest request
     ) {
         ItemSolicitado item = buscarEntidade(
@@ -118,8 +118,8 @@ public class ItemSolicitadoService {
 
     @Transactional
     public void remover(
-            Long idOferta,
-            Long idItemSolicitado
+            Integer idOferta,
+            Integer idItemSolicitado
     ) {
         ItemSolicitado item = buscarEntidade(
                 idOferta,
@@ -132,8 +132,8 @@ public class ItemSolicitadoService {
     }
 
     private ItemSolicitado buscarEntidade(
-            Long idOferta,
-            Long idItemSolicitado
+            Integer idOferta,
+            Integer idItemSolicitado
     ) {
         ItemSolicitado item = itemSolicitadoRepository
                 .findById(idItemSolicitado)
@@ -144,9 +144,7 @@ public class ItemSolicitadoService {
                         )
                 );
 
-        if (!item.getTroca()
-                .getIdOferta()
-                .equals(idOferta)) {
+        if (!item.getTroca().getIdOferta().equals(idOferta)) {
             throw new ResponseStatusException(
                     HttpStatus.NOT_FOUND,
                     "Item solicitado não encontrado nessa troca."
@@ -156,7 +154,7 @@ public class ItemSolicitadoService {
         return item;
     }
 
-    private Troca buscarTroca(Long idOferta) {
+    private Troca buscarTroca(Integer idOferta) {
         return trocaRepository
                 .findById(idOferta)
                 .orElseThrow(() ->

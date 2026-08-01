@@ -141,6 +141,7 @@ public class Oferta {
     }
 
     public void concretizar() {
+
         if (!estaPendente()) {
             throw new IllegalStateException(
                     "Apenas ofertas pendentes podem ser concretizadas."

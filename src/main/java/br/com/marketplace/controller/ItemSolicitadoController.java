@@ -1,8 +1,8 @@
 package br.com.marketplace.controller;
 
-import br.com.marketplace.dto.itemsolicitado.AtualizarItemSolicitadoRequest;
-import br.com.marketplace.dto.itemsolicitado.CriarItemSolicitadoRequest;
-import br.com.marketplace.dto.itemsolicitado.ItemSolicitadoResponse;
+import br.com.marketplace.dto.itemSolicitado.AtualizarItemSolicitadoRequest;
+import br.com.marketplace.dto.itemSolicitado.CriarItemSolicitadoRequest;
+import br.com.marketplace.dto.itemSolicitado.ItemSolicitadoResponse;
 import br.com.marketplace.service.ItemSolicitadoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +23,7 @@ public class ItemSolicitadoController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ItemSolicitadoResponse criar(
-            @PathVariable Long idOferta,
+            @PathVariable Integer idOferta,
             @Valid
             @RequestBody CriarItemSolicitadoRequest request
     ) {
@@ -35,7 +35,7 @@ public class ItemSolicitadoController {
 
     @GetMapping
     public List<ItemSolicitadoResponse> listar(
-            @PathVariable Long idOferta
+            @PathVariable Integer idOferta
     ) {
         return itemSolicitadoService
                 .listarPorTroca(idOferta);
@@ -43,8 +43,8 @@ public class ItemSolicitadoController {
 
     @GetMapping("/{idItemSolicitado}")
     public ItemSolicitadoResponse buscar(
-            @PathVariable Long idOferta,
-            @PathVariable Long idItemSolicitado
+            @PathVariable Integer idOferta,
+            @PathVariable Integer idItemSolicitado
     ) {
         return itemSolicitadoService.buscar(
                 idOferta,
@@ -54,8 +54,8 @@ public class ItemSolicitadoController {
 
     @PutMapping("/{idItemSolicitado}")
     public ItemSolicitadoResponse atualizar(
-            @PathVariable Long idOferta,
-            @PathVariable Long idItemSolicitado,
+            @PathVariable Integer idOferta,
+            @PathVariable Integer idItemSolicitado,
             @Valid
             @RequestBody AtualizarItemSolicitadoRequest request
     ) {
@@ -69,8 +69,8 @@ public class ItemSolicitadoController {
     @DeleteMapping("/{idItemSolicitado}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void remover(
-            @PathVariable Long idOferta,
-            @PathVariable Long idItemSolicitado
+            @PathVariable Integer idOferta,
+            @PathVariable Integer idItemSolicitado
     ) {
         itemSolicitadoService.remover(
                 idOferta,

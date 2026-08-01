@@ -91,6 +91,10 @@ public class PosseFigurinha {
         this.quantidade = quantidade;
     }
 
+    public String getNomeFigurinha(){
+        return this.figurinha.getNome();
+    }
+
     /**
      * =========================================================
      * Métodos Auxiliares

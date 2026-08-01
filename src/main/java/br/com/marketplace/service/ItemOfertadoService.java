@@ -1,12 +1,11 @@
 package br.com.marketplace.service;
 
-import br.com.marketplace.dto.itemofertado.AtualizarItemOfertadoRequest;
-import br.com.marketplace.dto.itemofertado.CriarItemOfertadoRequest;
-import br.com.marketplace.dto.itemofertado.ItemOfertadoResponse;
+import br.com.marketplace.dto.itemOfertado.AtualizarItemOfertadoRequest;
+import br.com.marketplace.dto.itemOfertado.CriarItemOfertadoRequest;
+import br.com.marketplace.dto.itemOfertado.ItemOfertadoResponse;
 import br.com.marketplace.entity.ItemOfertado;
 import br.com.marketplace.entity.Oferta;
 import br.com.marketplace.entity.PosseFigurinha;
-import br.com.marketplace.entity.id.ItemOfertadoId;
 import br.com.marketplace.mapper.ItemOfertadoMapper;
 import br.com.marketplace.repository.ItemOfertadoRepository;
 import br.com.marketplace.repository.OfertaRepository;
@@ -30,7 +29,7 @@ public class ItemOfertadoService {
 
     @Transactional
     public ItemOfertadoResponse criar(
-            Long idOferta,
+            Integer idOferta,
             CriarItemOfertadoRequest request
     ) {
         Oferta oferta = buscarOferta(idOferta);
@@ -62,7 +61,7 @@ public class ItemOfertadoService {
 
     @Transactional(readOnly = true)
     public List<ItemOfertadoResponse> listarPorOferta(
-            Long idOferta
+            Integer idOferta
     ) {
         buscarOferta(idOferta);
 
@@ -75,8 +74,8 @@ public class ItemOfertadoService {
 
     @Transactional(readOnly = true)
     public ItemOfertadoResponse buscar(
-            Long idOferta,
-            Long idItem
+            Integer idOferta,
+            Integer idItem
     ) {
         return itemOfertadoMapper.toResponse(
                 buscarEntidade(idOferta, idItem)
@@ -85,8 +84,8 @@ public class ItemOfertadoService {
 
     @Transactional
     public ItemOfertadoResponse atualizar(
-            Long idOferta,
-            Long idItem,
+            Integer idOferta,
+            Integer idItem,
             AtualizarItemOfertadoRequest request
     ) {
         ItemOfertado item =
@@ -101,8 +100,8 @@ public class ItemOfertadoService {
 
     @Transactional
     public void remover(
-            Long idOferta,
-            Long idItem
+            Integer idOferta,
+            Integer idItem
     ) {
         ItemOfertado item =
                 buscarEntidade(idOferta, idItem);
@@ -113,14 +112,12 @@ public class ItemOfertadoService {
     }
 
     private ItemOfertado buscarEntidade(
-            Long idOferta,
-            Long idItem
+            Integer idOferta,
+            Integer idItem
     ) {
-        ItemOfertadoId id =
-                new ItemOfertadoId(idItem, idOferta);
 
         return itemOfertadoRepository
-                .findById(id)
+                .findById(idItem)
                 .orElseThrow(() ->
                         new ResponseStatusException(
                                 HttpStatus.NOT_FOUND,
@@ -129,7 +126,7 @@ public class ItemOfertadoService {
                 );
     }
 
-    private Oferta buscarOferta(Long idOferta) {
+    private Oferta buscarOferta(Integer idOferta) {
         return ofertaRepository
                 .findById(idOferta)
                 .orElseThrow(() ->
