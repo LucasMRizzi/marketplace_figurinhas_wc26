@@ -2,19 +2,19 @@ package br.com.marketplace.entity;
 
 import br.com.marketplace.entity.enums.TipoOferta;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "venda")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Venda {
-
-    //TODO: atualizar preco unitario e quantidade para o dos itens ofertados
 
     /**
      * =========================================================
@@ -33,17 +33,6 @@ public class Venda {
             scale = 2
     )
     private BigDecimal valorDaProposta;
-
-    @Column(
-            name = "preco_unitario",
-            nullable = false,
-            precision = 10,
-            scale = 2
-    )
-    private BigDecimal precoUnitario;
-
-    @Column(name = "quantidade", nullable = false)
-    private Integer quantidade;
 
     /**
      * =========================================================
@@ -67,32 +56,22 @@ public class Venda {
 
     public Venda(
             Oferta oferta,
-            BigDecimal precoUnitario,
-            Integer quantidade
+            BigDecimal valorDaProposta
     ) {
         validarOferta(oferta);
-        validarValor(precoUnitario, "preço unitário");
-
-        if (quantidade == null || quantidade <= 0) {
-            throw new IllegalArgumentException(
-                    "A quantidade deve ser maior que zero."
-            );
-        }
+        validarValor(valorDaProposta, "valor da proposta");
 
         this.oferta = oferta;
-        this.valorDaProposta = precoUnitario.multiply(BigDecimal.valueOf(quantidade));
-        this.precoUnitario = precoUnitario;
-        this.quantidade = quantidade;
+        this.valorDaProposta = valorDaProposta;
+        this.valorDeMercado = oferta.calcularValorDeMercado();
     }
 
     public void atualizarVenda(
-            BigDecimal precoUnitario,
-            Integer quantidade
+            BigDecimal valorDaProposta
     ) {
-        validarValor(precoUnitario, "preço unitário");
-        this.precoUnitario = precoUnitario;
-        this.valorDaProposta = precoUnitario.multiply(BigDecimal.valueOf(quantidade));
-        this.quantidade = quantidade;
+        validarValor(valorDaProposta, "valor da proposta");
+
+        this.valorDaProposta = valorDaProposta;
     }
 
     /**

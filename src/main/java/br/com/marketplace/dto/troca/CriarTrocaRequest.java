@@ -1,9 +1,13 @@
 package br.com.marketplace.dto.troca;
 
+import br.com.marketplace.dto.itemOfertado.CriarItemOfertadoRequest;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.FutureOrPresent;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public record CriarTrocaRequest(
 
@@ -12,6 +16,11 @@ public record CriarTrocaRequest(
         LocalDate prazoLimite,
 
         @NotNull(message = "A descrição é obrigatória mesmo que esteja em branco.")
-        String descricao
+        String descricao,
+
+        @NotEmpty(
+                message = "A venda deve possuir pelo menos um item ofertado."
+        )
+        List<@Valid CriarItemOfertadoRequest> itensOfertados
 ) {
 }

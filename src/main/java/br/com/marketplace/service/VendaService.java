@@ -36,7 +36,9 @@ public class VendaService {
 
         Oferta oferta = new Oferta(
                 TipoOferta.VENDA,
-                proponente
+                proponente,
+                request.prazoLimite(),
+                request.descricao()
         );
 
         Oferta ofertaSalva = ofertaRepository.save(oferta);

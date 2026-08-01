@@ -6,24 +6,20 @@ import br.com.marketplace.entity.Oferta;
 import br.com.marketplace.entity.Troca;
 import br.com.marketplace.entity.Usuario;
 import br.com.marketplace.entity.enums.TipoOferta;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
 public class TrocaMapper {
 
+
     public Troca toEntity(
             CriarTrocaRequest request,
-            Usuario proponente
+            Oferta oferta
     ) {
-        Oferta oferta = new Oferta(
-                TipoOferta.TROCA,
-                proponente
-        );
 
         return new Troca(
-                oferta,
-                request.prazoLimite(),
-                request.descricao()
+                oferta
         );
     }
 
@@ -34,9 +30,10 @@ public class TrocaMapper {
                 oferta.getIdOferta(),
                 oferta.getStatus(),
                 oferta.getDataCriacao(),
-                oferta.getUsuarioProponente().getCpf(),
-                troca.getPrazoLimite(),
-                troca.getDescricao()
+                oferta.getPrazoLimite(),
+                oferta.getDescricao(),
+                oferta.getValorDeMercado(),
+                oferta.getUsuarioProponente().getCpf()
         );
     }
 }

@@ -2,13 +2,16 @@ package br.com.marketplace.entity;
 
 import br.com.marketplace.entity.enums.StatusOferta;
 import br.com.marketplace.entity.enums.TipoOferta;
+import br.com.marketplace.exception.RegraDeNegocioException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
+import org.springframework.cglib.core.Local;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,8 +51,22 @@ public class Oferta {
     )
     private TipoOferta tipo;
 
+    @Column(
+            name = "valor_de_mercado",
+            nullable = false,
+            precision = 10,
+            scale = 2
+    )
+    private BigDecimal valorDeMercado;
+
     @Column(name = "data_criacao", nullable = false)
     private LocalDate dataCriacao;
+
+    @Column(name = "prazo_limite", nullable = false)
+    private LocalDate prazoLimite;
+
+    @Column(name = "descricao", nullable = false)
+    private String descricao;
 
     /**
      * =========================================================
@@ -108,7 +125,9 @@ public class Oferta {
 
     public Oferta(
             TipoOferta tipo,
-            Usuario usuarioProponente
+            Usuario usuarioProponente,
+            LocalDate prazoLimite,
+            String descricao
     ) {
         if (tipo == null) {
             throw new IllegalArgumentException(
@@ -126,6 +145,9 @@ public class Oferta {
         this.usuarioProponente = usuarioProponente;
         this.status = StatusOferta.PENDENTE;
         this.dataCriacao = LocalDate.now();
+        this.prazoLimite = prazoLimite;
+        this.descricao = descricao;
+        this.valorDeMercado = calcularValorDeMercado();
     }
 
     public boolean estaPendente() {
@@ -159,6 +181,26 @@ public class Oferta {
         }
 
         this.status = StatusOferta.EXPIRADA;
+    }
+
+    private void calcularValorDeMercado(){
+
+    }
+
+    public void adicionarItemOfertado(ItemOfertado item) {
+        if (item == null) {
+            throw new IllegalArgumentException(
+                    "O item ofertado é obrigatório."
+            );
+        }
+
+        if (!estaPendente()) {
+            throw new RegraDeNegocioException(
+                    "Apenas ofertas pendentes podem receber itens."
+            );
+        }
+
+        itensOfertados.add(item);
     }
 
     void associarVenda(Venda venda) {

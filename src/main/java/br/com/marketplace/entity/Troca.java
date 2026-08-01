@@ -27,24 +27,6 @@ public class Troca {
     @Column(name = "id_oferta")
     private Integer idOferta;
 
-    @Column(
-            name = "valor_de_mercado",
-            nullable = false,
-            precision = 10,
-            scale = 2
-    )
-    private BigDecimal valorDeMercado;
-
-    @Column(name = "prazo_limite", nullable = false)
-    private LocalDate prazoLimite;
-
-    @Column(
-            name = "descricao",
-            nullable = false,
-            length = 140
-    )
-    private String descricao;
-
     /**
      * =========================================================
      * Chaves Estrangeiras
@@ -79,37 +61,11 @@ public class Troca {
      */
 
     public Troca(
-            Oferta oferta,
-            LocalDate prazoLimite,
-            String descricao
+            Oferta oferta
     ) {
         validarOferta(oferta);
-        validarPrazoLimite(prazoLimite);
-        validarDescricao(descricao);
-
-        /*TODO: if (valorDeMercado == null
-                || valorDeMercado.compareTo(BigDecimal.ZERO) < 0) {
-            throw new IllegalArgumentException(
-                    "O valor de mercado não pode ser negativo."
-            );
-        }*/
 
         this.oferta = oferta;
-        //TODO: this.valorDeMercado = calcularValorDeMercado();
-        this.valorDeMercado = BigDecimal.TEN;
-        this.prazoLimite = prazoLimite;
-        this.descricao = descricao;
-    }
-
-    public void atualizar(
-            LocalDate prazoLimite,
-            String descricao
-    ) {
-        validarPrazoLimite(prazoLimite);
-        validarDescricao(descricao);
-
-        this.prazoLimite = prazoLimite;
-        this.descricao = descricao;
     }
 
     /**

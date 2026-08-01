@@ -8,11 +8,15 @@ import org.springframework.stereotype.Component;
 public class OfertaMapper {
 
     public OfertaResponse toResponse(Oferta oferta) {
+
         return new OfertaResponse(
                 oferta.getIdOferta(),
                 oferta.getStatus(),
                 oferta.getTipo(),
                 oferta.getDataCriacao(),
+                oferta.getPrazoLimite(),
+                oferta.getDescricao(),
+                oferta.getValorDeMercado(),
                 oferta.getUsuarioProponente().getCpf()
         );
     }

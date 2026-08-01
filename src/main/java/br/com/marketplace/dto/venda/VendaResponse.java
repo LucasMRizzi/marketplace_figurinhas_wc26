@@ -7,13 +7,14 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public record VendaResponse(
+
         Integer idOferta,
         StatusOferta status,
-        TipoOferta tipo,
         LocalDate dataCriacao,
+        LocalDate prazoLimite,
+        String descricao,
+        BigDecimal valorDeMercado,
         String cpfProponente,
-        BigDecimal valorDaProposta,
-        BigDecimal precoUnitario,
-        Integer quantidade
+        BigDecimal valorDaProposta
 ) {
 }
