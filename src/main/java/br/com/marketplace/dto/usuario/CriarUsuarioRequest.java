@@ -1,6 +1,7 @@
 package br.com.marketplace.dto.usuario;
 
 import br.com.marketplace.dto.endereco.EnderecoRequest;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
@@ -25,6 +26,14 @@ public record CriarUsuarioRequest(
         String telefone,
 
         @NotNull(message = "O endereco não pode ser nulo.")
-        EnderecoRequest endereco
+        EnderecoRequest endereco,
+
+        @NotBlank(message = "A senha é obrigatória.")
+        @Size(
+                min = 8,
+                max = 16,
+                message = "A senha deve possuir entre 8 e 16 caracteres."
+        )
+        String senha
 ) {
 }

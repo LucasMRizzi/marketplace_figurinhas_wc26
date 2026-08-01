@@ -31,6 +31,7 @@ public class Usuario {
     @Column(name = "nome", nullable = false, length = 100)
     private String nome;
 
+    //TODO: fazer a logica para email ser unico
     @Column(name = "email", nullable = false, length = 100)
     private String email;
 
@@ -56,6 +57,13 @@ public class Usuario {
     @Embedded
     private Endereco endereco;
 
+    @Column(
+            name = "senha",
+            nullable = false,
+            length = 100
+    )
+    private String senha;
+
     /**
      * =========================================================
      * Relações
@@ -79,13 +87,15 @@ public class Usuario {
             String nome,
             String email,
             String telefone,
-            Endereco endereco
+            Endereco endereco,
+            String senha
     ) {
         validarNome(nome);
         validarCpf(cpf);
         validarEmail(email);
         validarTelefone(telefone);
         validarEndereco(endereco);
+        validarSenha(senha);
 
         this.cpf = cpf;
         this.nome = nome;
@@ -94,6 +104,7 @@ public class Usuario {
         this.endereco = endereco;
         this.saldo = BigDecimal.ZERO;
         this.avaliacaoMedia = BigDecimal.ZERO;
+        this.senha = senha;
     }
 
     public void atualizarDados(
@@ -229,6 +240,14 @@ public class Usuario {
         if (endereco == null) {
             throw new IllegalArgumentException(
                     "O endereço é obrigatório."
+            );
+        }
+    }
+
+    private void validarSenha(String senha) {
+        if (senha == null || senha.isBlank()) {
+            throw new IllegalArgumentException(
+                    "A senha é obrigatória."
             );
         }
     }
