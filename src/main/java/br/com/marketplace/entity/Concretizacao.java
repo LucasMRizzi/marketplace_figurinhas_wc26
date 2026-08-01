@@ -41,6 +41,12 @@ public class Concretizacao {
     @Column(name = "data_do_aceite", nullable = false)
     private LocalDate dataAceite;
 
+    @Column(name = "codigo_transacao", length = 100)
+    private String codigoTransacao;
+
+    @Column(name = "motivo_recusa", length = 255)
+    private String motivoRecusa;
+
     /**
      * =========================================================
      * Chaves Estrangeiras
@@ -121,25 +127,45 @@ public class Concretizacao {
         oferta.concretizar();
     }
 
-    public void iniciarProcessamentoPagamento() {
+    public void iniciarPagamento() {
         if (statusPagamento != StatusPagamento.PENDENTE) {
             throw new IllegalStateException(
-                    "O pagamento não está pendente."
+                    "Apenas pagamentos pendentes podem ser processados."
             );
         }
 
         this.statusPagamento =
-            StatusPagamento.PROCESSAMENTO;
+                StatusPagamento.PROCESSAMENTO;
     }
 
-    public void confirmarPagamento() {
-        if (statusPagamento
-                != StatusPagamento.PROCESSAMENTO) {
+    public void confirmarPagamento(String codigoTransacao) {
+        if (statusPagamento != StatusPagamento.PROCESSAMENTO) {
             throw new IllegalStateException(
-                    "O pagamento não está em processamento."
+                    "O pagamento deve estar em processamento."
+            );
+        }
+
+        if (codigoTransacao == null
+                || codigoTransacao.isBlank()) {
+            throw new IllegalArgumentException(
+                    "O código da transação é obrigatório."
             );
         }
 
         this.statusPagamento = StatusPagamento.PAGO;
+        this.codigoTransacao = codigoTransacao;
+        this.motivoRecusa = null;
+    }
+
+    public void recusarPagamento(String motivo) {
+        if (statusPagamento != StatusPagamento.PROCESSAMENTO) {
+            throw new IllegalStateException(
+                    "O pagamento deve estar em processamento."
+            );
+        }
+
+        this.statusPagamento = StatusPagamento.RECUSADO;
+        this.codigoTransacao = null;
+        this.motivoRecusa = motivo;
     }
 }
