@@ -5,7 +5,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public record CriarVendaRequest (
@@ -21,7 +21,7 @@ public record CriarVendaRequest (
         @FutureOrPresent(
                 message = "O prazo limite não pode estar no passado."
         )
-        LocalDate prazoLimite,
+        LocalDateTime prazoLimite,
 
         @Size(
                 max = 140,

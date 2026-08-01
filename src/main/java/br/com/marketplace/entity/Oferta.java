@@ -12,7 +12,7 @@ import org.hibernate.type.SqlTypes;
 import org.springframework.cglib.core.Local;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,10 +60,10 @@ public class Oferta {
     private BigDecimal valorDeMercado;
 
     @Column(name = "data_criacao", nullable = false)
-    private LocalDate dataCriacao;
+    private LocalDateTime dataCriacao;
 
     @Column(name = "prazo_limite", nullable = false)
-    private LocalDate prazoLimite;
+    private LocalDateTime prazoLimite;
 
     @Column(name = "descricao", nullable = false)
     private String descricao;
@@ -126,7 +126,7 @@ public class Oferta {
     public Oferta(
             TipoOferta tipo,
             Usuario usuarioProponente,
-            LocalDate prazoLimite,
+            LocalDateTime prazoLimite,
             String descricao
     ) {
         if (tipo == null) {
@@ -147,13 +147,13 @@ public class Oferta {
         this.tipo = tipo;
         this.usuarioProponente = usuarioProponente;
         this.status = StatusOferta.PENDENTE;
-        this.dataCriacao = LocalDate.now();
+        this.dataCriacao = LocalDateTime.now();
         this.prazoLimite = prazoLimite;
         this.descricao = descricao;
     }
 
     public void atualizarOferta(
-            LocalDate prazoLimite,
+            LocalDateTime prazoLimite,
             String descricao
     ){
         validarPrazoLimite(prazoLimite);
@@ -255,14 +255,14 @@ public class Oferta {
      * =========================================================
      */
 
-    private void validarPrazoLimite(LocalDate prazoLimite) {
+    private void validarPrazoLimite(LocalDateTime prazoLimite) {
         if (prazoLimite == null) {
             throw new IllegalArgumentException(
                     "O prazo limite é obrigatório."
             );
         }
 
-        if (prazoLimite.isBefore(LocalDate.now())) {
+        if (prazoLimite.isBefore(LocalDateTime.now())) {
             throw new IllegalArgumentException(
                     "O prazo limite não pode ser anterior à data atual."
             );

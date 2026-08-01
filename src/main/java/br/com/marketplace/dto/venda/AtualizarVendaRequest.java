@@ -3,7 +3,7 @@ package br.com.marketplace.dto.venda;
 import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public record AtualizarVendaRequest(
 
@@ -18,7 +18,7 @@ public record AtualizarVendaRequest(
         @FutureOrPresent(
                 message = "O prazo limite não pode estar no passado."
         )
-        LocalDate prazoLimite,
+        LocalDateTime prazoLimite,
 
         @Size(
                 max = 140,
