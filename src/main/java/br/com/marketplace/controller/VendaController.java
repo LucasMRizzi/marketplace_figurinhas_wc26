@@ -45,8 +45,8 @@ public class VendaController {
         return vendaService.listarPorProponente(cpf);
     }
 
-    @PatchMapping("/api/vendas/{idOferta}/preco")
-    public VendaResponse atualizarPreco(
+    @PatchMapping("/api/vendas/{idOferta}")
+    public VendaResponse atualizar(
             @PathVariable Integer idOferta,
             @Valid
             @RequestBody AtualizarVendaRequest request

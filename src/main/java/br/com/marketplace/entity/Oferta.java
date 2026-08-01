@@ -141,13 +141,26 @@ public class Oferta {
             );
         }
 
+        validarPrazoLimite(prazoLimite);
+        validarDescricao(descricao);
+
         this.tipo = tipo;
         this.usuarioProponente = usuarioProponente;
         this.status = StatusOferta.PENDENTE;
         this.dataCriacao = LocalDate.now();
         this.prazoLimite = prazoLimite;
         this.descricao = descricao;
-        this.valorDeMercado = calcularValorDeMercado();
+    }
+
+    public void atualizarOferta(
+            LocalDate prazoLimite,
+            String descricao
+    ){
+        validarPrazoLimite(prazoLimite);
+        validarDescricao(descricao);
+
+        this.prazoLimite = prazoLimite;
+        this.descricao = descricao;
     }
 
     public boolean estaPendente() {
@@ -183,10 +196,6 @@ public class Oferta {
         this.status = StatusOferta.EXPIRADA;
     }
 
-    private void calcularValorDeMercado(){
-
-    }
-
     public void adicionarItemOfertado(ItemOfertado item) {
         if (item == null) {
             throw new IllegalArgumentException(
@@ -203,35 +212,70 @@ public class Oferta {
         itensOfertados.add(item);
     }
 
-    void associarVenda(Venda venda) {
-        if (tipo != TipoOferta.VENDA) {
-            throw new IllegalStateException(
-                    "Uma oferta de troca não pode receber dados de venda."
-            );
-        }
-
-        if (this.troca != null) {
-            throw new IllegalStateException(
-                    "A oferta já possui dados de troca."
-            );
-        }
-
-        this.venda = venda;
+    public void calcularValorDeMercado(){
+        this.valorDeMercado = itensOfertados.stream()
+                .map(ItemOfertado::calcularValorDeMercado)
+                .reduce(
+                        BigDecimal.ZERO,
+                        BigDecimal::add
+                );
     }
 
-    void associarTroca(Troca troca) {
-        if (tipo != TipoOferta.TROCA) {
+    public void associarTroca(Troca troca) {
+        if (troca == null) {
+            throw new IllegalArgumentException(
+                    "A troca é obrigatória."
+            );
+        }
+
+        if (!ehTroca()) {
             throw new IllegalStateException(
-                    "Uma oferta de venda não pode receber dados de troca."
+                    "Uma oferta do tipo VENDA não pode receber uma troca."
             );
         }
 
         if (this.venda != null) {
             throw new IllegalStateException(
-                    "A oferta já possui dados de venda."
+                    "A oferta já possui uma venda associada."
+            );
+        }
+
+        if (this.troca != null && this.troca != troca) {
+            throw new IllegalStateException(
+                    "A oferta já possui outra troca associada."
             );
         }
 
         this.troca = troca;
     }
+
+    /**
+     * =========================================================
+     * Métodos Auxiliares
+     * =========================================================
+     */
+
+    private void validarPrazoLimite(LocalDate prazoLimite) {
+        if (prazoLimite == null) {
+            throw new IllegalArgumentException(
+                    "O prazo limite é obrigatório."
+            );
+        }
+
+        if (prazoLimite.isBefore(LocalDate.now())) {
+            throw new IllegalArgumentException(
+                    "O prazo limite não pode ser anterior à data atual."
+            );
+        }
+    }
+
+    private void validarDescricao(String descricao) {
+        if (descricao != null
+                && descricao.length() > 150) {
+            throw new IllegalArgumentException(
+                    "A descrição deve possuir no máximo 150 caracteres."
+            );
+        }
+    }
+
 }

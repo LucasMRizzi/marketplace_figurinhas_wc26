@@ -63,7 +63,6 @@ public class Venda {
 
         this.oferta = oferta;
         this.valorDaProposta = valorDaProposta;
-        this.valorDeMercado = oferta.calcularValorDeMercado();
     }
 
     public void atualizarVenda(
@@ -87,7 +86,7 @@ public class Venda {
             );
         }
 
-        if (oferta.getTipo() != TipoOferta.VENDA) {
+        if (!oferta.ehVenda()) {
             throw new IllegalArgumentException(
                     "A oferta deve ser do tipo venda."
             );

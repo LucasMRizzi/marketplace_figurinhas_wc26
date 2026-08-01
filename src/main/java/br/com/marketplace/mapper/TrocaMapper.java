@@ -1,5 +1,6 @@
 package br.com.marketplace.mapper;
 
+import br.com.marketplace.dto.troca.AtualizarTrocaRequest;
 import br.com.marketplace.dto.troca.CriarTrocaRequest;
 import br.com.marketplace.dto.troca.TrocaResponse;
 import br.com.marketplace.entity.Oferta;

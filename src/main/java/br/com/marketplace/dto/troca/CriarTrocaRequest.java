@@ -1,6 +1,7 @@
 package br.com.marketplace.dto.troca;
 
 import br.com.marketplace.dto.itemOfertado.CriarItemOfertadoRequest;
+import br.com.marketplace.dto.itemSolicitado.CriarItemSolicitadoRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotEmpty;
@@ -19,8 +20,13 @@ public record CriarTrocaRequest(
         String descricao,
 
         @NotEmpty(
-                message = "A venda deve possuir pelo menos um item ofertado."
+                message = "A troca deve possuir pelo menos um item ofertado."
         )
-        List<@Valid CriarItemOfertadoRequest> itensOfertados
+        List<@Valid CriarItemOfertadoRequest> itensOfertados,
+
+        @NotEmpty(
+                message = "A troca deve possuir pelo menos um item solicitado."
+        )
+        List<@Valid CriarItemSolicitadoRequest> itensSolicitados
 ) {
 }
