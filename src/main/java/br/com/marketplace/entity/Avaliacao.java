@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "avaliacao")
@@ -36,7 +36,7 @@ public class Avaliacao {
     private String comentario;
 
     @Column(name = "data", nullable = false)
-    private LocalDate data;
+    private LocalDateTime data;
 
     /**
      * =========================================================
@@ -111,7 +111,7 @@ public class Avaliacao {
         this.concretizacao = concretizacao;
         this.nota = nota;
         this.comentario = comentario;
-        this.data = LocalDate.now();
+        this.data = LocalDateTime.now();
     }
 
     public void alterarAvaliacao(
@@ -175,15 +175,10 @@ public class Avaliacao {
             );
         }
 
-        //TODO: corrigir essas chamas encadeadas
 
-        Usuario proponente =
-                concretizacao
-                        .getOferta()
-                        .getUsuarioProponente();
+        Usuario proponente = concretizacao.getUsuarioProponente();
 
-        Usuario aceitante =
-                concretizacao.getAceitante();
+        Usuario aceitante = concretizacao.getAceitante();
 
         boolean proponenteAvaliaAceitante =
                 avaliador.getCpf().equals(proponente.getCpf())

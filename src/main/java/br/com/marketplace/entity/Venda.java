@@ -1,14 +1,11 @@
 package br.com.marketplace.entity;
 
-import br.com.marketplace.entity.enums.TipoOferta;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 
 @Entity
 @Table(name = "venda")

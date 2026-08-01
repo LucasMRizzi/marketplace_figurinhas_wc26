@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,7 +39,7 @@ public class Concretizacao {
     private StatusPagamento statusPagamento;
 
     @Column(name = "data_do_aceite", nullable = false)
-    private LocalDate dataAceite;
+    private LocalDateTime dataAceite;
 
     /**
      * =========================================================
@@ -116,7 +116,7 @@ public class Concretizacao {
         this.oferta = oferta;
         this.aceitante = aceitante;
         this.statusPagamento = StatusPagamento.PENDENTE;
-        this.dataAceite = LocalDate.now();
+        this.dataAceite = LocalDateTime.now();
 
         oferta.concretizar();
     }
@@ -141,5 +141,9 @@ public class Concretizacao {
         }
 
         this.statusPagamento = StatusPagamento.PAGO;
+    }
+
+    public Usuario getUsuarioProponente(){
+        return oferta.getUsuarioProponente();
     }
 }

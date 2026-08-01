@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -21,16 +22,16 @@ public class OfertaExpiracaoService {
 
     // Roda a cada 1 hora (em milissegundos: 3600000)
     @Transactional
-    @Scheduled(fixedRate = 10000) 
+    @Scheduled(fixedRate = 3600000)
     public void verificarEExpirarOfertas() {
-        LocalDate hoje = LocalDate.now();
+        LocalDateTime hoje = LocalDateTime.now();
     
         // Busca ofertas PENDENTES onde o prazoLimite é menor que hoje
         List<Oferta> ofertasVencidas = ofertaRepository.findByStatusAndPrazoLimiteBefore(StatusOferta.PENDENTE, hoje);
 
         if (!ofertasVencidas.isEmpty()) {
             for (Oferta oferta : ofertasVencidas) {
-                oferta.expirar(); // Usa o seu método encapsulado em vez de um Setter!
+                oferta.expirar();
             }
             ofertaRepository.saveAll(ofertasVencidas);
             System.out.println("Foram expiradas " + ofertasVencidas.size() + " ofertas.");

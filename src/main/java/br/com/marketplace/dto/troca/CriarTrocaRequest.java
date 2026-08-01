@@ -7,14 +7,14 @@ import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public record CriarTrocaRequest(
 
         @NotNull(message = "O prazo limite é obrigatório.")
         @FutureOrPresent(message = "A data deve ser hoje ou uma data futura.")
-        LocalDate prazoLimite,
+        LocalDateTime prazoLimite,
 
         @NotNull(message = "A descrição é obrigatória mesmo que esteja em branco.")
         String descricao,

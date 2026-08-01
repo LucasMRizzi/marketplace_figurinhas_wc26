@@ -1,17 +1,16 @@
 package br.com.marketplace.dto.venda;
 
 import br.com.marketplace.entity.enums.StatusOferta;
-import br.com.marketplace.entity.enums.TipoOferta;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public record VendaResponse(
 
         Integer idOferta,
         StatusOferta status,
-        LocalDate dataCriacao,
-        LocalDate prazoLimite,
+        LocalDateTime dataCriacao,
+        LocalDateTime prazoLimite,
         String descricao,
         BigDecimal valorDeMercado,
         String cpfProponente,
