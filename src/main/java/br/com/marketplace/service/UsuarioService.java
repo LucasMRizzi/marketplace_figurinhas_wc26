@@ -8,6 +8,7 @@ import br.com.marketplace.exception.RecursoJaExisteException;
 import br.com.marketplace.exception.RecursoNaoEncontradoException;
 import br.com.marketplace.mapper.UsuarioMapper;
 import br.com.marketplace.repository.UsuarioRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,8 @@ public class UsuarioService {
     private final UsuarioRepository usuarioRepository;
     private final UsuarioMapper usuarioMapper;
 
+    private final PasswordEncoder passwordEncoder;
+
     @Transactional
     public UsuarioResponse criar(CriarUsuarioRequest request) {
         if (usuarioRepository.existsById(request.cpf())) {
@@ -29,7 +32,9 @@ public class UsuarioService {
             );
         }
 
-        Usuario usuario = usuarioMapper.toEntity(request);
+        String senhaCodificada = passwordEncoder.encode(request.senha());
+
+        Usuario usuario = usuarioMapper.toEntity(request, senhaCodificada);
 
         Usuario usuario_salvo = usuarioRepository.save(usuario);
 
