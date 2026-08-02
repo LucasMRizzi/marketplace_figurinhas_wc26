@@ -32,6 +32,12 @@ public class UsuarioService {
             );
         }
 
+        if (usuarioRepository.existsByEmailIgnoreCase(request.email())) {
+            throw new RecursoJaExisteException(
+                    "Já existe um usuário cadastrado com este e-mail."
+            );
+        }
+
         String senhaCodificada = passwordEncoder.encode(request.senha());
 
         Usuario usuario = usuarioMapper.toEntity(request, senhaCodificada);
@@ -60,6 +66,14 @@ public class UsuarioService {
             AtualizarUsuarioRequest request
     ) {
         Usuario usuario = buscarEntidadePorCpf(cpf);
+
+        if (!usuario.getEmail().equals(request.email())
+                && usuarioRepository.existsByEmailIgnoreCase(request.email())) {
+
+            throw new RecursoJaExisteException(
+                    "Já existe um usuário cadastrado com este e-mail."
+            );
+        }
 
         usuarioMapper.updateEntity(usuario, request);
 
