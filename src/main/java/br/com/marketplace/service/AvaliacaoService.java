@@ -21,6 +21,11 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.List;
 
+/**
+ * Serviço responsável pelo gerenciamento de avaliações (feedbacks) entre usuários.
+ * Atua no processamento das notas após a conclusão de uma negociação (Concretização),
+ * garantindo as regras de negócio e mantendo a nota média dos usuários sempre atualizada.
+ */
 @Service
 @RequiredArgsConstructor
 public class AvaliacaoService {
@@ -30,6 +35,17 @@ public class AvaliacaoService {
     private final UsuarioRepository usuarioRepository;
     private final AvaliacaoMapper avaliacaoMapper;
 
+    /**
+     * Registra uma nova avaliação referente a uma negociação concretizada.
+     * Após salvar a avaliação, recalcula automaticamente a nota média do usuário avaliado.
+     *
+     * @param idConcretizacao Identificador da negociação finalizada.
+     * @param request         Objeto contendo a nota, comentário e o CPF do avaliador.
+     * @return AvaliacaoResponse contendo os dados da avaliação recém-criada.
+     * @throws RecursoNaoEncontradoException Se a concretização ou o usuário avaliador não existirem.
+     * @throws RegraDeNegocioException       Se o avaliador tentar avaliar a si mesmo, ou se não for o aceitante da oferta.
+     * @throws RecursoJaExisteException      Se já existir uma avaliação registrada para esta mesma negociação entre os mesmos usuários.
+     */
     @Transactional
     public AvaliacaoResponse criar(
             Integer idConcretizacao,
@@ -90,6 +106,15 @@ public class AvaliacaoService {
         return avaliacaoMapper.toResponse(salva);
     }
 
+    /**
+     * Recupera os dados de uma avaliação específica utilizando sua chave composta.
+     *
+     * @param cpfAvaliador    CPF do usuário que realizou a avaliação.
+     * @param cpfAvaliado     CPF do usuário que recebeu a avaliação.
+     * @param idConcretizacao ID da negociação avaliada.
+     * @return AvaliacaoResponse com as informações formatadas.
+     * @throws RecursoNaoEncontradoException Se a avaliação não existir no banco.
+     */
     @Transactional(readOnly = true)
     public AvaliacaoResponse buscar(
             String cpfAvaliador,
@@ -107,6 +132,12 @@ public class AvaliacaoService {
         );
     }
 
+    /**
+     * Retorna a lista de todas as avaliações que um determinado usuário recebeu.
+     *
+     * @param cpf CPF do usuário avaliado.
+     * @return Lista de AvaliacaoResponse recebidas pelo usuário.
+     */
     @Transactional(readOnly = true)
     public List<AvaliacaoResponse> listarPorAvaliado(
             String cpf
@@ -118,6 +149,12 @@ public class AvaliacaoService {
                 .toList();
     }
 
+    /**
+     * Retorna a lista de todas as avaliações que um determinado usuário fez sobre outros.
+     *
+     * @param cpf CPF do usuário avaliador.
+     * @return Lista de AvaliacaoResponse feitas pelo usuário.
+     */
     @Transactional(readOnly = true)
     public List<AvaliacaoResponse> listarPorAvaliador(
             String cpf
@@ -129,6 +166,17 @@ public class AvaliacaoService {
                 .toList();
     }
 
+    /**
+     * Modifica a nota e/ou comentário de uma avaliação já existente.
+     * O método garante que a nota média do usuário avaliado seja recalculada após a alteração.
+     *
+     * @param cpfAvaliador    CPF do usuário que realizou a avaliação original.
+     * @param cpfAvaliado     CPF do usuário que recebeu a avaliação.
+     * @param idConcretizacao ID da negociação vinculada à avaliação.
+     * @param request         Objeto contendo os novos dados (nota e/ou comentário).
+     * @return AvaliacaoResponse contendo a avaliação atualizada.
+     * @throws RecursoNaoEncontradoException Se a avaliação original não for encontrada.
+     */
     @Transactional
     public AvaliacaoResponse atualizar(
             String cpfAvaliador,
@@ -159,6 +207,14 @@ public class AvaliacaoService {
         return avaliacaoMapper.toResponse(avaliacao);
     }
 
+    /**
+     * Exclui uma avaliação do banco de dados e recalcula a nota média do usuário que havia sido avaliado.
+     *
+     * @param cpfAvaliador    CPF do usuário que realizou a avaliação.
+     * @param cpfAvaliado     CPF do usuário que recebeu a avaliação.
+     * @param idConcretizacao ID da negociação vinculada à avaliação.
+     * @throws RecursoNaoEncontradoException Se a avaliação não for encontrada para exclusão.
+     */
     @Transactional
     public void remover(
             String cpfAvaliador,
@@ -183,6 +239,16 @@ public class AvaliacaoService {
         atualizarMediaAvaliado(avaliado);
     }
 
+    /**
+     * Valida as regras de negócio referentes à elegibilidade para realizar uma avaliação.
+     * Garante que apenas a pessoa que aceitou a oferta possa avaliar o dono da oferta, 
+     * e impede autoavaliações.
+     *
+     * @param concretizacao A negociação concretizada.
+     * @param avaliador     O usuário tentando realizar a avaliação.
+     * @param avaliado      O usuário que está recebendo a avaliação.
+     * @throws RegraDeNegocioException Se alguma regra for violada.
+     */
     private void validarParticipantes(
             Concretizacao concretizacao,
             Usuario avaliador,
@@ -204,6 +270,12 @@ public class AvaliacaoService {
         }
     }
 
+    /**
+     * Recalcula a nota média geral de um usuário com base em todas as avaliações 
+     * registradas no banco de dados e atualiza a entidade Usuario.
+     *
+     * @param usuarioAvaliado O usuário que terá sua média atualizada.
+     */
     private void atualizarMediaAvaliado(
             Usuario usuarioAvaliado
     ) {
@@ -218,6 +290,14 @@ public class AvaliacaoService {
         );
     }
 
+    /**
+     * Método utilitário para centralizar a busca por uma entidade Avaliacao e 
+     * padronizar o lançamento da exceção de não encontrada.
+     *
+     * @param id Chave composta (AvaliacaoId) da avaliação.
+     * @return Entidade Avaliacao encontrada.
+     * @throws RecursoNaoEncontradoException Se a avaliação não for encontrada.
+     */
     private Avaliacao buscarEntidade(
             AvaliacaoId id
     ) {

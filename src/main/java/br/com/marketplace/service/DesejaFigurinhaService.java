@@ -19,6 +19,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+/**
+ * Serviço responsável por gerenciar a lista de desejos (wishlist) dos usuários.
+ * Controla o vínculo entre um usuário e as figurinhas do catálogo que ele tem 
+ * interesse em adquirir no marketplace.
+ */
 @Service
 @RequiredArgsConstructor
 public class DesejaFigurinhaService {
@@ -28,6 +33,17 @@ public class DesejaFigurinhaService {
     private final FigurinhaRepository figurinhaRepository;
     private final DesejaFigurinhaMapper desejoMapper;
 
+    /**
+     * Adiciona uma nova figurinha à lista de desejos de um usuário.
+     * Valida a existência do usuário, a existência da figurinha no catálogo geral,
+     * e garante que a figurinha não seja inserida em duplicidade na lista do mesmo usuário.
+     *
+     * @param cpfUsuario CPF do usuário que está adicionando o desejo.
+     * @param request    Objeto contendo o código e o tipo da figurinha desejada.
+     * @return DesejaFigurinhaResponse contendo os dados do desejo registrado.
+     * @throws RecursoNaoEncontradoException Se o usuário ou a figurinha informada não existirem no sistema.
+     * @throws RecursoJaExisteException      Se o usuário já possuir essa exata figurinha em sua lista de desejos.
+     */
     @Transactional
     public DesejaFigurinhaResponse adicionar(
             String cpfUsuario,
@@ -79,6 +95,13 @@ public class DesejaFigurinhaService {
         return desejoMapper.toResponse(salvo);
     }
 
+    /**
+     * Retorna a lista completa de todas as figurinhas que um usuário específico deseja.
+     *
+     * @param cpfUsuario CPF do usuário a ser consultado.
+     * @return Lista de DesejaFigurinhaResponse contendo os itens desejados.
+     * @throws RecursoNaoEncontradoException Se o CPF informado não pertencer a nenhum usuário cadastrado.
+     */
     @Transactional(readOnly = true)
     public List<DesejaFigurinhaResponse> listarPorUsuario(
             String cpfUsuario
@@ -96,6 +119,15 @@ public class DesejaFigurinhaService {
                 .toList();
     }
 
+    /**
+     * Busca um registro específico de desejo, combinando o usuário e as características da figurinha.
+     *
+     * @param cpfUsuario CPF do usuário que adicionou o desejo.
+     * @param codigo     Código da figurinha (ex: "BRA10").
+     * @param tipo       Tipo da figurinha (ex: NORMAL, BRILHANTE).
+     * @return DesejaFigurinhaResponse com as informações daquele desejo específico.
+     * @throws RecursoNaoEncontradoException Se o registro de desejo não for encontrado.
+     */
     @Transactional(readOnly = true)
     public DesejaFigurinhaResponse buscar(
             String cpfUsuario,
@@ -116,6 +148,14 @@ public class DesejaFigurinhaService {
         return desejoMapper.toResponse(desejo);
     }
 
+    /**
+     * Remove uma figurinha da lista de desejos de um usuário.
+     *
+     * @param cpfUsuario CPF do usuário que está removendo o desejo.
+     * @param codigo     Código da figurinha a ser removida da lista.
+     * @param tipo       Tipo da figurinha a ser removida.
+     * @throws RecursoNaoEncontradoException Se o registro de desejo não existir para ser removido.
+     */
     @Transactional
     public void remover(
             String cpfUsuario,
@@ -136,6 +176,16 @@ public class DesejaFigurinhaService {
         desejoRepository.delete(desejo);
     }
 
+    /**
+     * Método utilitário interno responsável por montar a chave composta (DesejaFigurinhaId).
+     * Como a entidade DesejaFigurinha depende da chave composta de Figurinha, 
+     * este método simplifica a instanciação desses identificadores.
+     *
+     * @param cpfUsuario CPF do usuário dono da lista de desejos.
+     * @param codigo     Código da figurinha desejada.
+     * @param tipo       Tipo da figurinha desejada.
+     * @return DesejaFigurinhaId instanciado e pronto para consultas no banco.
+     */
     private DesejaFigurinhaId criarId(
             String cpfUsuario,
             String codigo,
