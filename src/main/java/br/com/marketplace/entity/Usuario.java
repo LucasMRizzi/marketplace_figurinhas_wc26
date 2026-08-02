@@ -31,7 +31,6 @@ public class Usuario {
     @Column(name = "nome", nullable = false, length = 100)
     private String nome;
 
-    //TODO: fazer a logica para email ser unico
     @Column(name = "email", nullable = false, length = 100)
     private String email;
 
