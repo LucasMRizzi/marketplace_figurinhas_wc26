@@ -50,9 +50,13 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
 
-                .authenticationProvider(authenticationProvider())
-
                 .authorizeHttpRequests(auth -> auth
+
+                        .requestMatchers(
+                                "/swagger-ui.html",
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**"
+                        ).permitAll()
 
                         .requestMatchers(
                                 HttpMethod.POST,
@@ -61,6 +65,8 @@ public class SecurityConfig {
 
                         .anyRequest().authenticated()
                 )
+
+                .authenticationProvider(authenticationProvider())
 
                 .formLogin(form -> form
                         .loginPage("/login")

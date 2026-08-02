@@ -19,6 +19,12 @@ public class FigurinhaController {
 
     private final FigurinhaService figurinhaService;
 
+    /**
+     * Criar nova figurinha
+     *
+     * POST http://localhost:8081/api/figurinhas
+     * JSON RequestBody -> CriarFigurinhaRequest
+     */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public FigurinhaResponse criar(
@@ -27,6 +33,11 @@ public class FigurinhaController {
         return figurinhaService.criar(request);
     }
 
+    /**
+     * Listar figurinhas
+     *
+     * POST http://localhost:8081/api/figurinhas
+     */
     @GetMapping
     public List<FigurinhaResponse> listar(
             @RequestParam(required = false) String nome
@@ -38,6 +49,11 @@ public class FigurinhaController {
         return figurinhaService.listarTodos();
     }
 
+    /**
+     * Buscar figurinha
+     *
+     * POST http://localhost:8081/api/figurinhas/{codigo}/{tipo}
+     */
     @GetMapping("/{codigo}/{tipo}")
     public FigurinhaResponse buscar(
             @PathVariable String codigo,
@@ -46,6 +62,12 @@ public class FigurinhaController {
         return figurinhaService.buscar(codigo, tipo);
     }
 
+    /**
+     * Atualizar figurinha
+     *
+     * PUT http://localhost:8081/api/figurinhas{codigo}/{tipo}
+     * JSON RequestBody -> AtualizarFigurinhaRequest
+     */
     @PutMapping("/{codigo}/{tipo}")
     public FigurinhaResponse atualizar(
             @PathVariable String codigo,
@@ -59,6 +81,11 @@ public class FigurinhaController {
         );
     }
 
+    /**
+     * Remover figurinha
+     *
+     * Remove http://localhost:8081/api/figurinhas{codigo}/{tipo}
+     */
     @DeleteMapping("/{codigo}/{tipo}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void remover(
