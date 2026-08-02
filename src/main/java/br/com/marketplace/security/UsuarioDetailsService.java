@@ -3,7 +3,6 @@ package br.com.marketplace.security;
 import br.com.marketplace.entity.Usuario;
 import br.com.marketplace.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -11,8 +10,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class UsuarioDetailsService
-        implements UserDetailsService {
+public class UsuarioDetailsService implements UserDetailsService {
 
     private final UsuarioRepository usuarioRepository;
 
@@ -23,15 +21,8 @@ public class UsuarioDetailsService
         Usuario usuario = usuarioRepository
                 .findByEmailIgnoreCase(email)
                 .orElseThrow(() ->
-                        new UsernameNotFoundException(
-                                "Usuário não encontrado."
-                        )
-                );
+                        new UsernameNotFoundException("Usuário não encontrado."));
 
-        return User.builder()
-                .username(usuario.getEmail())
-                .password(usuario.getSenha())
-                .roles("USER")
-                .build();
+        return new UsuarioDetails(usuario);
     }
 }
