@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="pt-br"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>Marketplace</title>
+
+    <link rel="stylesheet"
+          th:href="@{/css/style.css}">
+
+</head>
+
+<body>
+
+<header>
+
+    <h1>Marketplace de Figurinhas</h1>
+
+    <p>Bem-vindo ao sistema.</p>
+
+</header>
+
+<nav>
+
+    <a th:href="@{/ofertas/nova}">
+        Nova Oferta
+    </a>
+
+    <a th:href="@{/ofertas}">
+        Buscar Ofertas
+    </a>
+
+    <a th:href="@{/album}">
+        Meu Álbum
+    </a>
+
+    <a th:href="@{/posses}">
+        Minhas Figurinhas
+    </a>
+
+    <a th:href="@{/perfil}">
+        Meu Perfil
+    </a>
+
+    <a th:href="@{/logout}">
+        Sair
+    </a>
+
+</nav>
+
+<section class="ofertas">
+
+    <h2>Últimas Ofertas</h2>
+
+    <div th:if="${#lists.isEmpty(ofertas)}">
+
+        <p>Nenhuma oferta cadastrada.</p>
+
+    </div>
+
+    <div class="card-oferta"
+         th:each="oferta : ${ofertas}">
+
+        <div class="linha">
+
+            <h3>
+                Oferta #
+                <span th:text="${oferta.idOferta()}"></span>
+            </h3>
+
+            <span class="status"
+                  th:text="${oferta.status()}"></span>
+
+        </div>
+
+        <p>
+
+            <strong>Tipo:</strong>
+
+            <span th:text="${oferta.tipo()}"></span>
+
+        </p>
+
+        <p>
+
+            <strong>Descrição:</strong>
+
+            <span th:text="${oferta.descricao()}"></span>
+
+        </p>
+
+        <p>
+
+            <strong>Proponente:</strong>
+
+            <span th:text="${oferta.cpfProponente()}"></span>
+
+        </p>
+
+        <p>
+
+            <strong>Prazo:</strong>
+
+            <span th:text="${#temporals.format(oferta.prazoLimite(),'dd/MM/yyyy HH:mm')}"></span>
+
+        </p>
+
+        <p>
+
+            <strong>Valor de Mercado:</strong>
+
+            R$
+            <span th:text="${oferta.valorDeMercado()}"></span>
+
+        </p>
+
+        <a class="botao"
+           th:href="@{/ofertas/{id}(id=${oferta.idOferta()})}">
+
+            Ver Oferta
+
+        </a>
+
+    </div>
+
+</section>
+
+</body>
+
+</html>
