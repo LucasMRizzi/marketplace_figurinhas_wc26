@@ -1,45 +1,296 @@
 <!DOCTYPE html>
-<html lang="pt-BR"
+<html lang="pt-br"
       xmlns:th="http://www.thymeleaf.org">
+
 <head>
+
     <meta charset="UTF-8">
-    <title>Entrar</title>
+    <title>Marketplace Figurinhas</title>
+
+    <link rel="stylesheet"
+          th:href="@{/css/style.css}">
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+          rel="stylesheet">
+
 </head>
+
 <body>
 
-<h1>Entrar</h1>
 
-<p th:if="${param.erro}">
-    E-mail ou senha inválidos.
-</p>
+<header>
 
-<p th:if="${param.logout}">
-    Sessão encerrada com sucesso.
-</p>
+    <nav class="navbar">
 
-<form th:action="@{/login}" method="post">
-    <label for="email">E-mail</label>
-    <input
-            id="email"
-            name="email"
-            type="email"
-            required
-    >
+        <div class="logo">
 
-    <label for="senha">Senha</label>
-    <input
-            id="senha"
-            name="senha"
-            type="password"
-            required
-    >
+            <img th:src="@{/images/logo.png}" alt="Logo">
 
-    <button type="submit">Entrar</button>
-</form>
+            <span>Marketplace Figurinhas</span>
 
-<a th:href="@{/registro}">
-    Criar conta
+        </div>
+
+        <ul>
+
+            <li><a href="/">Home</a></li>
+
+            <li><a href="/ofertas">Ofertas</a></li>
+
+            <li><a href="/trocas">Trocas</a></li>
+
+            <li><a href="/usuarios">Usuários</a></li>
+
+            <li><a href="/swagger-ui/login.html">
+                API
+            </a></li>
+
+        </ul>
+
+    </nav>
+
+</header>
+
+<!-- ================= HERO ================= -->
+
+<section class="hero">
+
+    <div class="hero-text">
+
+        <h1>
+            Complete seu álbum da Copa do Mundo
+        </h1>
+
+        <p>
+
+            Compre, venda e troque figurinhas com colecionadores de todo o Brasil.
+
+        </p>
+
+        <a href="/ofertas" class="btn">
+
+            Ver ofertas
+
+        </a>
+
+    </div>
+
+    <div class="hero-image">
+
+        <img th:src="@{/images/hero.png}" alt="Hero">
+
+    </div>
+
+</section>
+
+<!-- ================= BANNER ================= -->
+
+<section class="banner">
+
+    <img th:src="@{/images/banner.jpg}" alt="Banner">
+
+</section>
+<section class="pesquisa">
+
+    <h2>Encontre sua figurinha</h2>
+
+    <div class="filtros">
+
+        <input
+                type="text"
+                id="campoPesquisa"
+                placeholder="Pesquisar por descrição..."
+        >
+
+        <select id="tipoOferta">
+
+            <option value="">Todos os tipos</option>
+            <option value="VENDA">Venda</option>
+            <option value="TROCA">Troca</option>
+
+        </select>
+
+        <select id="statusOferta">
+
+            <option value="">Todos os status</option>
+            <option value="PENDENTE">Pendente</option>
+            <option value="CONCRETIZADA">Concretizada</option>
+            <option value="EXPIRADA">Expirada</option>
+
+        </select>
+
+        <button onclick="filtrarOfertas()">
+            Pesquisar
+        </button>
+
+    </div>
+
+</section>
+
+<!-- ================= DESTAQUES ================= -->
+
+<section class="cards">
+
+    <div class="card">
+
+        <h2>Comprar</h2>
+
+        <p>
+
+            Encontre figurinhas raras rapidamente.
+
+        </p>
+
+    </div>
+
+    <div class="card">
+
+        <h2>Vender</h2>
+
+        <p>
+
+            Venda suas repetidas de forma segura.
+
+        </p>
+
+    </div>
+
+    <div class="card">
+
+        <h2>Trocar</h2>
+
+        <p>
+
+            Faça propostas com outros usuários.
+
+        </p>
+
+    </div>
+
+</section>
+
+
+
+<section>
+
+    <h2>Últimas ofertas</h2>
+
+    <div class="card"
+         th:each="oferta : ${ofertas}">
+
+        <h3>
+            Oferta #
+            <span th:text="${oferta.id}"></span>
+        </h3>
+
+        <p>
+
+            <strong>Tipo:</strong>
+
+            <span th:text="${oferta.tipo}">
+            </span>
+
+        </p>
+
+        <p>
+
+            <strong>Status:</strong>
+
+            <span th:text="${oferta.status}">
+            </span>
+
+        </p>
+
+        <p>
+
+            <strong>Descrição:</strong>
+
+            <span th:text="${oferta.descricao}">
+            </span>
+
+        </p>
+
+        <a th:href="@{/ofertas/{id}(id=${oferta.id})}">
+            Ver detalhes
+        </a>
+
+    </div>
+
+</section>
+
+<section class="card">
+    <h2>Adicionar Figurinha Desejada</h2>
+
+    <form id="formItemSolicitado">
+
+        <input
+                type="text"
+                id="codigoSolicitado"
+                placeholder="Código da figurinha"
+                maxlength="6"
+                required>
+
+        <select id="tipoSolicitado">
+            <option value="NORMAL">Normal</option>
+            <option value="ESPECIAL">Especial</option>
+        </select>
+
+        <input
+                type="number"
+                id="quantidadeSolicitada"
+                value="1"
+                min="1">
+
+        <button type="submit">
+            Adicionar
+        </button>
+
+    </form>
+</section>
+
+<footer>
+
+    Marketplace Figurinhas © 2026
+
+</footer>
+
+<script th:src="@{/js/script.js}"></script>
+
+<a th:href="@{/dashboard}" class="btn">
+    Entrar no Marketplace
 </a>
 
+<div th:if="${#lists.isEmpty(ofertas)}">
+
+    <p>
+        Nenhuma oferta cadastrada.
+    </p>
+
+</div>
+
+<section class="card">
+
+    <h2>Figurinhas Desejadas</h2>
+
+    <table>
+
+        <thead>
+
+        <tr>
+
+            <th>Código</th>
+            <th>Tipo</th>
+            <th>Qtd</th>
+
+        </tr>
+
+        </thead>
+
+        <tbody id="listaSolicitados">
+
+        </tbody>
+
+    </table>
+
+</section>
 </body>
 </html>
