@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-BR"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Entrar</title>
+</head>
+<body>
+
+<h1>Entrar</h1>
+
+<p th:if="${param.erro}">
+    E-mail ou senha inválidos.
+</p>
+
+<p th:if="${param.logout}">
+    Sessão encerrada com sucesso.
+</p>
+
+<form th:action="@{/login}" method="post">
+    <label for="email">E-mail</label>
+    <input
+            id="email"
+            name="email"
+            type="email"
+            required
+    >
+
+    <label for="senha">Senha</label>
+    <input
+            id="senha"
+            name="senha"
+            type="password"
+            required
+    >
+
+    <button type="submit">Entrar</button>
+</form>
+
+<a th:href="@{/registro}">
+    Criar conta
+</a>
+
+</body>
+</html>

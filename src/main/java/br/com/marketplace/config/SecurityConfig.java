@@ -47,19 +47,26 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http)
             throws Exception {
 
-        http
-                .csrf(csrf -> csrf.disable())
-
+        return http
+                .csrf(csrf -> csrf
+                        .ignoringRequestMatchers("/api/**")
+                )
                 .authorizeHttpRequests(auth -> auth
-
                         .requestMatchers(
-                                "/swagger-ui.html",
+                                "/login",
+                                "/registro",
+                                "/css/**",
+                                "/js/**",
+                                "/images/**",
                                 "/swagger-ui/**",
-                                "/v3/api-docs/**"
+                                "/v3/api-docs/**",
+                                "/error"
                         ).permitAll()
 
                         .requestMatchers(
                                 HttpMethod.POST,
+                                "/login",
+                                "/registro",
                                 "/api/usuarios"
                         ).permitAll()
 
@@ -70,15 +77,23 @@ public class SecurityConfig {
 
                 .formLogin(form -> form
                         .loginPage("/login")
+                        .loginProcessingUrl("/login")
+                        .usernameParameter("email")
+                        .passwordParameter("senha")
+                        .defaultSuccessUrl("/", true)
+                        .failureUrl("/login?erro")
                         .permitAll()
                 )
+
                 .logout(logout -> logout
-                        .logoutSuccessUrl("/login")
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/login?logout")
+                        .invalidateHttpSession(true)
+                        .deleteCookies("JSESSIONID")
                         .permitAll()
-                );
+                )
 
-
-        return http.build();
+                .build();
     }
 
 }
