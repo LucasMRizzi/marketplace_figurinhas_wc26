@@ -35,3 +35,20 @@ public record CriarUsuarioRequest(
         String senha
 ) {
 }
+
+/** Exemplo de arquivo json:
+ * {
+  "cpf": "123.456.789-00",
+  "nome": "João da Silva",
+  "email": "joao.silva@email.com",
+  "telefone": "(19) 99999-9999",
+  "senha": "senhaSegura123",
+  "endereco": {
+    "logradouro": "Rua das Flores",
+    "numero": 123,
+    "caixaPostal": "Cx 45",
+    "cidade": "Rio Claro",
+    "cep": "13500-000"
+  }
+  }
+ */

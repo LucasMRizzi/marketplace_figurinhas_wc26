@@ -24,3 +24,12 @@ public record CriarPosseFigurinhaRequest (
         Integer quantidade
 ){
 }
+
+/** Exemplo de arquivo json:
+ * {
+  "cpfUsuario": "123.456.789-00",
+  "codigoFigurinha": "POR07",
+  "tipoFigurinha": "NORMAL",
+  "quantidade": 5
+  }
+ */

@@ -24,3 +24,12 @@ public record CriarItemOfertadoRequest(
         String foto
 ) {
 }
+
+/** Exemplo de arquivo json:
+ * {
+  "idPosse": 150,
+  "quantidadeOfertada": 2,
+  "condicao": "PERFEITA",
+  "foto": "https://meubucket.com/fotos/figurinha-bra10.jpg"
+  }
+ */

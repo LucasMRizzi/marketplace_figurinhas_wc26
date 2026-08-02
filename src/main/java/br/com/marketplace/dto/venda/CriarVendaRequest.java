@@ -35,3 +35,19 @@ public record CriarVendaRequest (
         List<@Valid CriarItemOfertadoRequest> itensOfertados
 ) {
 }
+
+/** Exemplo de arquivo json:
+ * {
+  "valorDaProposta": 200.00,
+  "prazoLimite": "2026-08-20T23:59:59",
+  "descricao": "Vendo lote de figurinhas raras.",
+  "itensOfertados": [
+    {
+      "idPosse": 210,
+      "quantidadeOfertada": 3,
+      "condicao": "PERFEITA",
+      "foto": "lote-raras.jpg"
+    }
+  ]
+  }
+ */

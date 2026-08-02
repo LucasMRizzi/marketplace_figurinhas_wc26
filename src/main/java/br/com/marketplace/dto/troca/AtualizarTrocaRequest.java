@@ -15,3 +15,10 @@ public record AtualizarTrocaRequest (
         String descricao
 ) {
 }
+
+/** Exemplo de arquivo json:
+ * {
+  "prazoLimite": "2026-08-15T23:59:59",
+  "descricao": "Nova descrição: Aceito jogadores de outras seleções europeias também."
+  }
+ */

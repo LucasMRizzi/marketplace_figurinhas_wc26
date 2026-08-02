@@ -27,3 +27,6 @@ public record EnderecoRequest(
         String cep
 ) {
 }
+
+
+/**Contemplado em "CriarUsuarioRequest.java" */

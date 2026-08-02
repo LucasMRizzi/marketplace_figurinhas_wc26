@@ -11,3 +11,14 @@ public record ItemSolicitadoResponse(
         Integer quantidade
 ) {
 }
+
+/** Exemplo de arquivo json:
+ * {
+  "idItemSolicitado": 412,
+  "idOferta": 45,
+  "codigoFigurinha": "FRA07",
+  "tipoFigurinha": "NORMAL",
+  "nomeFigurinha": "Kylian Mbappé",
+  "quantidade": 3
+  }
+ */

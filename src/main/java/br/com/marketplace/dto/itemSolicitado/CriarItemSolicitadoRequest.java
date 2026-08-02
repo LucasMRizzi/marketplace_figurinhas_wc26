@@ -23,3 +23,11 @@ public record CriarItemSolicitadoRequest(
         Integer quantidade
 ) {
 }
+
+/** Exemplo de arquivo json:
+ * {
+  "codigoFigurinha": "FRA07",
+  "tipoFigurinha": "NORMAL",
+  "quantidade": 1
+  }
+ */
