@@ -5,6 +5,7 @@ import br.com.marketplace.dto.posseFigurinha.PosseFigurinhaResponse;
 import br.com.marketplace.entity.Figurinha;
 import br.com.marketplace.entity.PosseFigurinha;
 import br.com.marketplace.entity.Usuario;
+import br.com.marketplace.entity.enums.TipoFigurinha;
 import br.com.marketplace.entity.id.FigurinhaId;
 import br.com.marketplace.exception.RecursoNaoEncontradoException;
 import br.com.marketplace.mapper.PosseFigurinhaMapper;
@@ -46,34 +47,16 @@ public class PosseFigurinhaService {
             String cpfUsuario,
             CriarPosseFigurinhaRequest request
     ) {
-        Usuario usuario = usuarioRepository
-                .findById(cpfUsuario)
-                .orElseThrow(() ->
-                        new RecursoNaoEncontradoException(
-                                "Usuário não encontrado."
-                        )
-                );
+        Usuario usuario = buscarUsuario(cpfUsuario);
 
         FigurinhaId figurinhaId = new FigurinhaId(
                 request.codigoFigurinha(),
                 request.tipoFigurinha()
         );
 
-        Figurinha figurinha = figurinhaRepository
-                .findById(figurinhaId)
-                .orElseThrow(() ->
-                        new RecursoNaoEncontradoException(
-                                "Figurinha não encontrada."
-                        )
-                );
+        Figurinha figurinha = buscarFigurinha(figurinhaId);
 
-        PosseFigurinha posse = posseRepository
-                .findByUsuarioCpfAndFigurinhaIdCodigoAndFigurinhaIdTipo(
-                        cpfUsuario,
-                        request.codigoFigurinha(),
-                        request.tipoFigurinha()
-                )
-                .orElse(null);
+        PosseFigurinha posse = buscarPosse(cpfUsuario, figurinhaId);
 
         if (posse == null) {
             posse = posseMapper.toEntity(
@@ -171,6 +154,12 @@ public class PosseFigurinhaService {
     }
 
     /**
+     * =========================================================
+     * Buscas Auxiliares
+     * =========================================================
+     */
+
+    /**
      * Método utilitário privado para buscar a entidade PosseFigurinha 
      * e centralizar o tratamento de erro de recurso não encontrado.
      *
@@ -185,5 +174,38 @@ public class PosseFigurinhaService {
                                 "Posse não encontrada."
                         )
                 );
+    }
+
+    private Usuario buscarUsuario(String cpf){
+        return usuarioRepository
+                .findById(cpf)
+                .orElseThrow(() ->
+                        new RecursoNaoEncontradoException(
+                                "Usuário não encontrado."
+                        )
+                );
+    }
+
+    private Figurinha buscarFigurinha(FigurinhaId figurinhaId){
+        return figurinhaRepository
+                .findById(figurinhaId)
+                .orElseThrow(() ->
+                        new RecursoNaoEncontradoException(
+                                "Figurinha não encontrada."
+                        )
+                );
+    }
+
+    private PosseFigurinha buscarPosse(
+            String cpfUsuario,
+            FigurinhaId figurinhaId
+    ){
+        return posseRepository
+                .findByUsuarioCpfAndFigurinhaIdCodigoAndFigurinhaIdTipo(
+                        cpfUsuario,
+                        figurinhaId.getCodigo(),
+                        figurinhaId.getTipo()
+                )
+                .orElse(null);
     }
 }

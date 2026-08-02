@@ -6,6 +6,7 @@ import br.com.marketplace.dto.itemSolicitado.ItemSolicitadoResponse;
 import br.com.marketplace.entity.Figurinha;
 import br.com.marketplace.entity.ItemSolicitado;
 import br.com.marketplace.entity.Troca;
+import br.com.marketplace.entity.enums.TipoFigurinha;
 import br.com.marketplace.entity.id.FigurinhaId;
 import br.com.marketplace.mapper.ItemSolicitadoMapper;
 import br.com.marketplace.repository.FigurinhaRepository;
@@ -54,16 +55,11 @@ public class ItemSolicitadoService {
 
         validarTrocaPendente(troca);
 
-        if (itemSolicitadoRepository.existeFigurinhaNaTroca(
+        validarFigurinhaSolicitada(
                 idOferta,
                 request.codigoFigurinha(),
                 request.tipoFigurinha()
-        )) {
-            throw new ResponseStatusException(
-                    HttpStatus.CONFLICT,
-                    "Essa figurinha já foi solicitada nessa troca."
-            );
-        }
+        );
 
         FigurinhaId figurinhaId = new FigurinhaId(
                 request.codigoFigurinha(),
@@ -182,15 +178,11 @@ public class ItemSolicitadoService {
     }
 
     /**
-     * Método utilitário privado para buscar um ItemSolicitado.
-     * Além de verificar se o item existe no banco de dados, aplica uma camada de segurança 
-     * garantindo que o item efetivamente pertence à oferta (`idOferta`) informada na URL da requisição.
-     *
-     * @param idOferta         Identificador da oferta informado na rota.
-     * @param idItemSolicitado Identificador da entidade no banco de dados.
-     * @return A entidade ItemSolicitado recuperada.
-     * @throws ResponseStatusException Se o item não for encontrado ou houver incompatibilidade de IDs (404 NOT FOUND).
+     * =========================================================
+     * Buscas Auxiliares
+     * =========================================================
      */
+
     private ItemSolicitado buscarEntidade(
             Integer idOferta,
             Integer idItemSolicitado
@@ -214,13 +206,6 @@ public class ItemSolicitadoService {
         return item;
     }
 
-    /**
-     * Método utilitário privado para buscar uma Troca no banco de dados.
-     *
-     * @param idOferta Identificador da troca (herdado da Oferta).
-     * @return Entidade Troca encontrada.
-     * @throws ResponseStatusException Se a troca não existir (404 NOT FOUND).
-     */
     private Troca buscarTroca(Integer idOferta) {
         return trocaRepository
                 .findById(idOferta)
@@ -233,17 +218,29 @@ public class ItemSolicitadoService {
     }
 
     /**
-     * Valida se a oferta associada à troca ainda possui o status PENDENTE.
-     * Protege as negociações contra modificações caso já tenham sido concretizadas, expiradas ou canceladas.
-     *
-     * @param troca A entidade Troca a ser avaliada.
-     * @throws ResponseStatusException Se a oferta subjacente não estiver PENDENTE (409 CONFLICT).
+     * =========================================================
+     * Validações Auxiliares
+     * =========================================================
      */
+
     private void validarTrocaPendente(Troca troca) {
         if (!troca.getOferta().estaPendente()) {
             throw new ResponseStatusException(
                     HttpStatus.CONFLICT,
                     "Os itens de uma troca não pendente não podem ser alterados."
+            );
+        }
+    }
+
+    private void validarFigurinhaSolicitada(Integer idOferta, String codigoFigurinha, TipoFigurinha tipoFigurinha){
+        if (itemSolicitadoRepository.existeFigurinhaNaTroca(
+                idOferta,
+                codigoFigurinha,
+                tipoFigurinha
+        )) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "Essa figurinha já foi solicitada nessa troca."
             );
         }
     }

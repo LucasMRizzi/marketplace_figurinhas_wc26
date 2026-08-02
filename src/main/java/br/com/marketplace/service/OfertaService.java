@@ -108,13 +108,11 @@ public class OfertaService {
     }
 
     /**
-     * Método utilitário privado para centralizar a busca por uma entidade Oferta
-     * e padronizar o lançamento da exceção de recurso não encontrado.
-     *
-     * @param idOferta Identificador único da oferta.
-     * @return Entidade Oferta bruta recuperada do banco de dados.
-     * @throws RecursoNaoEncontradoException Se a oferta não existir.
+     * =========================================================
+     * Buscas Auxiliares
+     * =========================================================
      */
+
     private Oferta buscarEntidade(Integer idOferta) {
         return ofertaRepository.findById(idOferta)
                 .orElseThrow(() ->

@@ -58,25 +58,11 @@ public class VendaService {
                 request.descricao()
         );
 
-        for (CriarItemOfertadoRequest itemRequest : request.itensOfertados()) {
-
-            PosseFigurinha posse = buscarPosse(itemRequest);
-
-            validarPosseDoProponente(
-                    posse,
-                    proponente
-            );
-
-            ItemOfertado item = new ItemOfertado(
-                    oferta,
-                    posse,
-                    itemRequest.quantidadeOfertada(),
-                    itemRequest.condicao(),
-                    itemRequest.foto()
-            );
-
-            oferta.adicionarItemOfertado(item);
-        }
+        adicionarItensOfertados(
+                oferta,
+                proponente,
+                request.itensOfertados()
+        );
 
         oferta.calcularValorDeMercado();
 
@@ -182,13 +168,54 @@ public class VendaService {
     }
 
     /**
-     * Método utilitário privado para centralizar a busca por uma entidade Venda
-     * e padronizar o lançamento de exceção.
-     *
-     * @param idOferta Identificador único da oferta associada.
-     * @return A entidade Venda encontrada.
-     * @throws RecursoNaoEncontradoException Se o ID não corresponder a nenhuma venda.
+     * =========================================================
+     * Métodos Auxiliares
+     * =========================================================
      */
+
+    /**
+     * TODO
+     */
+    private void adicionarItensOfertados(
+            Oferta oferta,
+            Usuario proponente,
+            List<CriarItemOfertadoRequest> itens
+    ) {
+        for (CriarItemOfertadoRequest itemRequest : itens) {
+
+            PosseFigurinha posse = posseFigurinhaRepository
+                    .findById(itemRequest.idPosse())
+                    .orElseThrow(() ->
+                            new RecursoNaoEncontradoException(
+                                    "Posse de ID "
+                                            + itemRequest.idPosse()
+                                            + " não encontrada."
+                            )
+                    );
+
+            validarPosseDoProponente(
+                    posse,
+                    proponente
+            );
+
+            ItemOfertado item = new ItemOfertado(
+                    oferta,
+                    posse,
+                    itemRequest.quantidadeOfertada(),
+                    itemRequest.condicao(),
+                    itemRequest.foto()
+            );
+
+            oferta.adicionarItemOfertado(item);
+        }
+    }
+
+    /**
+     * =========================================================
+     * Buscas Auxiliares
+     * =========================================================
+     */
+
     private Venda buscarEntidade(Integer idOferta) {
         return vendaRepository.findById(idOferta)
                 .orElseThrow(() ->
@@ -198,29 +225,11 @@ public class VendaService {
                 );
     }
 
-    /**
-     * Método utilitário privado para verificar e instanciar o proponente da venda.
-     *
-     * @param cpf CPF do usuário.
-     * @return A entidade Usuario encontrada no banco.
-     * @throws RecursoNaoEncontradoException Se o usuário não existir.
-     */
     private Usuario buscarUsuario(String cpf) {
         return usuarioRepository.findById(cpf)
                 .orElseThrow(() ->
                         new RecursoNaoEncontradoException(
                                 "Usuário não encontrado."
-                        )
-                );
-    }
-
-    private PosseFigurinha buscarPosse (CriarItemOfertadoRequest request){
-        return posseFigurinhaRepository.findById(request.idPosse())
-                .orElseThrow(() ->
-                        new RecursoNaoEncontradoException(
-                                "Posse de ID "
-                                        + request.idPosse()
-                                        + " não encontrada."
                         )
                 );
     }
@@ -234,6 +243,11 @@ public class VendaService {
                 );
     }
 
+    /**
+     * =========================================================
+     * Validações Auxiliares
+     * =========================================================
+     */
 
     private void validarPosseDoProponente(
             PosseFigurinha posse,

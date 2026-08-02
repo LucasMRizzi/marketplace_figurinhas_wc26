@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling; //novo -daniel
 
 @SpringBootApplication
-@EnableScheduling //novo -daniel
+@EnableScheduling
 public class MarketplaceApplication {
 
 	public static void main(String[] args) {

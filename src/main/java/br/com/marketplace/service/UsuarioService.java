@@ -27,6 +27,8 @@ public class UsuarioService {
     private final UsuarioRepository usuarioRepository;
     private final UsuarioMapper usuarioMapper;
 
+    private final PasswordEncoder passwordEncoder;
+
     /**
      * Cadastra um novo usuário na plataforma.
      * Antes de persistir os dados, verifica se já existe uma conta vinculada ao CPF informado.
@@ -35,8 +37,6 @@ public class UsuarioService {
      * @return UsuarioResponse contendo os dados do usuário recém-criado.
      * @throws RecursoJaExisteException Se o CPF já estiver cadastrado no banco de dados.
      */
-    private final PasswordEncoder passwordEncoder;
-
     @Transactional
     public UsuarioResponse criar(CriarUsuarioRequest request) {
         if (usuarioRepository.existsById(request.cpf())) {
@@ -126,6 +126,12 @@ public class UsuarioService {
         Usuario usuario = buscarEntidadePorCpf(cpf);
         usuarioRepository.delete(usuario);
     }
+
+    /**
+     * =========================================================
+     * Buscas Auxiliares
+     * =========================================================
+     */
 
     /**
      * Método utilitário privado para encapsular a busca de um usuário no banco

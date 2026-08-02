@@ -83,6 +83,13 @@ public class TrocaService {
         );
     }
 
+    /**
+     * Atualiza os dados editáveis de uma proposta de troca em andamento.
+     *
+     * @param idOferta Identificador único da oferta vinculada à troca.
+     * @param request  Objeto contendo os novos dados (prazo limite e descrição).
+     * @throws RecursoNaoEncontradoException Se a troca não for encontrada para atualização.
+     */
     @Transactional
     public TrocaResponse atualizar(
             Integer idOferta,
@@ -143,26 +150,6 @@ public class TrocaService {
     }
 
     /**
-     * Atualiza os dados editáveis de uma proposta de troca em andamento.
-     *
-     * @param idOferta Identificador único da oferta vinculada à troca.
-     * @param request  Objeto contendo os novos dados (prazo limite e descrição).
-     * @throws RecursoNaoEncontradoException Se a troca não for encontrada para atualização.
-     */
-    @Transactional
-    public void atualizar(
-            Integer idOferta,
-            AtualizarTrocaRequest request
-    ) {
-        Troca troca = buscarEntidade(idOferta);
-
-        troca.atualizar(
-                request.prazoLimite(),
-                request.descricao()
-        );
-    }
-
-    /**
      * Remove uma proposta de troca do sistema. 
      * A exclusão é feita deletando a entidade matriz (Oferta), o que deve disparar a 
      * exclusão em cascata (CascadeType.ALL / orphanRemoval) da Troca associada no banco de dados.
@@ -186,12 +173,13 @@ public class TrocaService {
     }
 
     /**
-     * Método utilitário privado para centralizar a busca por uma entidade Troca
-     * e padronizar o lançamento da exceção.
-     *
-     * @param idOferta Identificador único da oferta associada.
-     * @return A entidade Troca encontrada.
-     * @throws RecursoNaoEncontradoException Se o ID não corresponder a nenhuma troca.
+     * =========================================================
+     * Métodos Auxiliares
+     * =========================================================
+     */
+
+    /**
+     * TODO
      */
     private void adicionarItensOfertados(
             Oferta oferta,
@@ -227,6 +215,9 @@ public class TrocaService {
         }
     }
 
+    /**
+     * TODO
+     */
     private void adicionarItensSolicitados(
             Troca troca,
             List<CriarItemSolicitadoRequest> itens
@@ -260,6 +251,12 @@ public class TrocaService {
         }
     }
 
+    /**
+     * =========================================================
+     * Validações Auxiliares
+     * =========================================================
+     */
+
     private void validarPosseDoProponente(
             PosseFigurinha posse,
             Usuario proponente
@@ -273,6 +270,12 @@ public class TrocaService {
             );
         }
     }
+
+    /**
+     * =========================================================
+     * Buscas Auxiliares
+     * =========================================================
+     */
 
     private Usuario buscarUsuario(String cpf) {
         return usuarioRepository.findById(cpf)
