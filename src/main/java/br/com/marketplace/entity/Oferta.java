@@ -12,7 +12,7 @@ import org.hibernate.type.SqlTypes;
 import org.springframework.cglib.core.Local;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,10 +60,10 @@ public class Oferta {
     private BigDecimal valorDeMercado;
 
     @Column(name = "data_criacao", nullable = false)
-    private LocalDate dataCriacao;
+    private LocalDateTime dataCriacao;
 
     @Column(name = "prazo_limite", nullable = false)
-    private LocalDate prazoLimite;
+    private LocalDateTime prazoLimite;
 
     @Column(name = "descricao", nullable = false)
     private String descricao;
@@ -126,7 +126,7 @@ public class Oferta {
     public Oferta(
             TipoOferta tipo,
             Usuario usuarioProponente,
-            LocalDate prazoLimite,
+            LocalDateTime prazoLimite,
             String descricao
     ) {
         if (tipo == null) {
@@ -141,13 +141,26 @@ public class Oferta {
             );
         }
 
+        validarPrazoLimite(prazoLimite);
+        validarDescricao(descricao);
+
         this.tipo = tipo;
         this.usuarioProponente = usuarioProponente;
         this.status = StatusOferta.PENDENTE;
-        this.dataCriacao = LocalDate.now();
+        this.dataCriacao = LocalDateTime.now();
         this.prazoLimite = prazoLimite;
         this.descricao = descricao;
-        this.valorDeMercado = calcularValorDeMercado();
+    }
+
+    public void atualizarOferta(
+            LocalDateTime prazoLimite,
+            String descricao
+    ){
+        validarPrazoLimite(prazoLimite);
+        validarDescricao(descricao);
+
+        this.prazoLimite = prazoLimite;
+        this.descricao = descricao;
     }
 
     public boolean estaPendente() {
@@ -183,10 +196,6 @@ public class Oferta {
         this.status = StatusOferta.EXPIRADA;
     }
 
-    private void calcularValorDeMercado(){
-
-    }
-
     public void adicionarItemOfertado(ItemOfertado item) {
         if (item == null) {
             throw new IllegalArgumentException(
@@ -203,35 +212,70 @@ public class Oferta {
         itensOfertados.add(item);
     }
 
-    void associarVenda(Venda venda) {
-        if (tipo != TipoOferta.VENDA) {
-            throw new IllegalStateException(
-                    "Uma oferta de troca não pode receber dados de venda."
-            );
-        }
-
-        if (this.troca != null) {
-            throw new IllegalStateException(
-                    "A oferta já possui dados de troca."
-            );
-        }
-
-        this.venda = venda;
+    public void calcularValorDeMercado(){
+        this.valorDeMercado = itensOfertados.stream()
+                .map(ItemOfertado::calcularValorDeMercado)
+                .reduce(
+                        BigDecimal.ZERO,
+                        BigDecimal::add
+                );
     }
 
-    void associarTroca(Troca troca) {
-        if (tipo != TipoOferta.TROCA) {
+    public void associarTroca(Troca troca) {
+        if (troca == null) {
+            throw new IllegalArgumentException(
+                    "A troca é obrigatória."
+            );
+        }
+
+        if (!ehTroca()) {
             throw new IllegalStateException(
-                    "Uma oferta de venda não pode receber dados de troca."
+                    "Uma oferta do tipo VENDA não pode receber uma troca."
             );
         }
 
         if (this.venda != null) {
             throw new IllegalStateException(
-                    "A oferta já possui dados de venda."
+                    "A oferta já possui uma venda associada."
+            );
+        }
+
+        if (this.troca != null && this.troca != troca) {
+            throw new IllegalStateException(
+                    "A oferta já possui outra troca associada."
             );
         }
 
         this.troca = troca;
     }
+
+    /**
+     * =========================================================
+     * Métodos Auxiliares
+     * =========================================================
+     */
+
+    private void validarPrazoLimite(LocalDateTime prazoLimite) {
+        if (prazoLimite == null) {
+            throw new IllegalArgumentException(
+                    "O prazo limite é obrigatório."
+            );
+        }
+
+        if (prazoLimite.isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException(
+                    "O prazo limite não pode ser anterior à data atual."
+            );
+        }
+    }
+
+    private void validarDescricao(String descricao) {
+        if (descricao != null
+                && descricao.length() > 150) {
+            throw new IllegalArgumentException(
+                    "A descrição deve possuir no máximo 150 caracteres."
+            );
+        }
+    }
+
 }

@@ -4,15 +4,15 @@ import br.com.marketplace.entity.enums.StatusOferta;
 import br.com.marketplace.entity.enums.TipoOferta;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public record OfertaResponse (
 
         Integer idOferta,
         StatusOferta status,
         TipoOferta tipo,
-        LocalDate dataCriacao,
-        LocalDate prazoLimite,
+        LocalDateTime dataCriacao,
+        LocalDateTime prazoLimite,
         String descricao,
         BigDecimal valorDeMercado,
         String cpfProponente

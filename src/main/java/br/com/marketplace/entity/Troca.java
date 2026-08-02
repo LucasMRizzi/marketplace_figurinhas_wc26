@@ -1,13 +1,14 @@
 package br.com.marketplace.entity;
 
 import br.com.marketplace.entity.enums.TipoOferta;
+import br.com.marketplace.exception.RegraDeNegocioException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -66,6 +67,23 @@ public class Troca {
         validarOferta(oferta);
 
         this.oferta = oferta;
+        oferta.associarTroca(this);
+    }
+
+    public void adicionarItemSolicitado(ItemSolicitado item) {
+        if (item == null) {
+            throw new IllegalArgumentException(
+                    "O item solicitado é obrigatório."
+            );
+        }
+
+        if (!oferta.estaPendente()) {
+            throw new RegraDeNegocioException(
+                    "Apenas ofertas pendentes podem receber itens."
+            );
+        }
+
+        itensSolicitados.add(item);
     }
 
     /**
@@ -84,34 +102,6 @@ public class Troca {
         if (oferta.getTipo() != TipoOferta.TROCA) {
             throw new IllegalArgumentException(
                     "A oferta deve ser do tipo troca."
-            );
-        }
-    }
-
-    private void validarPrazoLimite(LocalDate prazoLimite) {
-        if (prazoLimite == null) {
-            throw new IllegalArgumentException(
-                    "O prazo limite é obrigatório."
-            );
-        }
-
-        if (prazoLimite.isBefore(LocalDate.now())) {
-            throw new IllegalArgumentException(
-                    "O prazo limite não pode ser anterior à data atual."
-            );
-        }
-    }
-
-    private void validarDescricao(String descricao) {
-        if (descricao == null) {
-            throw new IllegalArgumentException(
-                    "A descrição é obrigatória. Caso não exista, informe uma string vazia."
-            );
-        }
-
-        if (descricao.length() > 140) {
-            throw new IllegalArgumentException(
-                    "A descrição não pode ter mais de 140 caracteres."
             );
         }
     }

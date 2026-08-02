@@ -18,7 +18,7 @@ public class ConcretizacaoController {
     private final ConcretizacaoService concretizacaoService;
 
     @PostMapping("/ofertas/{idOferta}")
-    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseStatus(HttpStatus.ACCEPTED)
     public ConcretizacaoResponse criar(
             @PathVariable Integer idOferta,
             @Valid
@@ -29,6 +29,7 @@ public class ConcretizacaoController {
                 request
         );
     }
+
 
     @GetMapping
     public List<ConcretizacaoResponse> listarTodas() {

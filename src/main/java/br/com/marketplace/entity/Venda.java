@@ -1,14 +1,11 @@
 package br.com.marketplace.entity;
 
-import br.com.marketplace.entity.enums.TipoOferta;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 
 @Entity
 @Table(name = "venda")
@@ -63,7 +60,6 @@ public class Venda {
 
         this.oferta = oferta;
         this.valorDaProposta = valorDaProposta;
-        this.valorDeMercado = oferta.calcularValorDeMercado();
     }
 
     public void atualizarVenda(
@@ -87,7 +83,7 @@ public class Venda {
             );
         }
 
-        if (oferta.getTipo() != TipoOferta.VENDA) {
+        if (!oferta.ehVenda()) {
             throw new IllegalArgumentException(
                     "A oferta deve ser do tipo venda."
             );

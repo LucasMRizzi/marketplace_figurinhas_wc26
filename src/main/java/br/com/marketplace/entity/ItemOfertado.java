@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
+import java.math.BigDecimal;
+
 @Entity
 @Table(name = "item_ofertado")
 @Getter
@@ -122,7 +124,16 @@ public class ItemOfertado {
         return this.posseFigurinha.getNomeFigurinha();
     }
 
+    public BigDecimal calcularValorDeMercado() {
+        BigDecimal valorUnitario =
+                posseFigurinha
+                        .getFigurinha()
+                        .getValorDeMercado();
 
+        return valorUnitario.multiply(
+                BigDecimal.valueOf(quantidadeOfertada)
+        );
+    }
     /**
      * =========================================================
      * Métodos auxiliares

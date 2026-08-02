@@ -13,13 +13,17 @@ public class UsuarioMapper {
 
     private final EnderecoMapper enderecoMapper;
 
-    public Usuario toEntity(CriarUsuarioRequest request) {
+    public Usuario toEntity(
+            CriarUsuarioRequest request,
+            String senhaCodificada
+    ) {
         return new Usuario(
                 request.cpf(),
                 request.nome(),
                 request.email(),
                 request.telefone(),
-                enderecoMapper.toEntity(request.endereco())
+                enderecoMapper.toEntity(request.endereco()),
+                senhaCodificada
         );
     }
 

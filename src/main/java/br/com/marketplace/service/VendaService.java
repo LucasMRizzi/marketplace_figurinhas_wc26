@@ -1,15 +1,16 @@
 package br.com.marketplace.service;
 
+import br.com.marketplace.dto.itemOfertado.CriarItemOfertadoRequest;
 import br.com.marketplace.dto.venda.AtualizarVendaRequest;
 import br.com.marketplace.dto.venda.CriarVendaRequest;
 import br.com.marketplace.dto.venda.VendaResponse;
-import br.com.marketplace.entity.Oferta;
-import br.com.marketplace.entity.Usuario;
-import br.com.marketplace.entity.Venda;
+import br.com.marketplace.entity.*;
 import br.com.marketplace.entity.enums.TipoOferta;
 import br.com.marketplace.exception.RecursoNaoEncontradoException;
+import br.com.marketplace.exception.RegraDeNegocioException;
 import br.com.marketplace.mapper.VendaMapper;
 import br.com.marketplace.repository.OfertaRepository;
+import br.com.marketplace.repository.PosseFigurinhaRepository;
 import br.com.marketplace.repository.UsuarioRepository;
 import br.com.marketplace.repository.VendaRepository;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +31,7 @@ public class VendaService {
     private final VendaRepository vendaRepository;
     private final OfertaRepository ofertaRepository;
     private final UsuarioRepository usuarioRepository;
+    private final PosseFigurinhaRepository posseFigurinhaRepository;
     private final VendaMapper vendaMapper;
 
     /**
@@ -56,12 +58,33 @@ public class VendaService {
                 request.descricao()
         );
 
+        for (CriarItemOfertadoRequest itemRequest : request.itensOfertados()) {
+
+            PosseFigurinha posse = buscarPosse(itemRequest);
+
+            validarPosseDoProponente(
+                    posse,
+                    proponente
+            );
+
+            ItemOfertado item = new ItemOfertado(
+                    oferta,
+                    posse,
+                    itemRequest.quantidadeOfertada(),
+                    itemRequest.condicao(),
+                    itemRequest.foto()
+            );
+
+            oferta.adicionarItemOfertado(item);
+        }
+
+        oferta.calcularValorDeMercado();
+
         Oferta ofertaSalva = ofertaRepository.save(oferta);
 
         Venda venda = new Venda(
                 ofertaSalva,
-                request.precoUnitario(),
-                request.quantidade()
+                request.valorDaProposta()
         );
 
         Venda vendaSalva = vendaRepository.save(venda);
@@ -77,7 +100,7 @@ public class VendaService {
      * @throws RecursoNaoEncontradoException Se não existir uma venda associada ao ID informado.
      */
     @Transactional(readOnly = true)
-    public VendaResponse buscar(Integer idOferta) {
+    public VendaResponse buscar (Integer idOferta){
         return vendaMapper.toResponse(
                 buscarEntidade(idOferta)
         );
@@ -89,7 +112,7 @@ public class VendaService {
      * @return Lista contendo todas as VendaResponse.
      */
     @Transactional(readOnly = true)
-    public List<VendaResponse> listarTodas() {
+    public List<VendaResponse> listarTodas () {
         return vendaRepository.findAll()
                 .stream()
                 .map(vendaMapper::toResponse)
@@ -103,9 +126,9 @@ public class VendaService {
      * @return Lista de VendaResponse vinculadas a este usuário.
      */
     @Transactional(readOnly = true)
-    public List<VendaResponse> listarPorProponente(
+    public List<VendaResponse> listarPorProponente (
             String cpf
-    ) {
+    ){
         return vendaRepository
                 .findByOfertaUsuarioProponenteCpf(cpf)
                 .stream()
@@ -122,13 +145,21 @@ public class VendaService {
      * @throws RecursoNaoEncontradoException Se a venda não for encontrada para atualização.
      */
     @Transactional
-    public VendaResponse atualizar(
+    public VendaResponse atualizar (
             Integer idOferta,
             AtualizarVendaRequest request
-    ) {
+    ){
         Venda venda = buscarEntidade(idOferta);
+        Oferta oferta = buscarOferta(idOferta);
 
-        venda.atualizarVenda(request.precoUnitario(), request.quantidade());
+        venda.atualizarVenda(
+                request.valorDaProposta()
+        );
+
+        oferta.atualizarOferta(
+                request.prazoLimite(),
+                request.descricao()
+        );
 
         return vendaMapper.toResponse(venda);
     }
@@ -142,7 +173,7 @@ public class VendaService {
      * @throws RecursoNaoEncontradoException Se a venda não for localizada.
      */
     @Transactional
-    public void remover(Integer idOferta) {
+    public void remover (Integer idOferta){
         Venda venda = buscarEntidade(idOferta);
 
         ofertaRepository.delete(
@@ -181,5 +212,40 @@ public class VendaService {
                                 "Usuário não encontrado."
                         )
                 );
+    }
+
+    private PosseFigurinha buscarPosse (CriarItemOfertadoRequest request){
+        return posseFigurinhaRepository.findById(request.idPosse())
+                .orElseThrow(() ->
+                        new RecursoNaoEncontradoException(
+                                "Posse de ID "
+                                        + request.idPosse()
+                                        + " não encontrada."
+                        )
+                );
+    }
+
+    private Oferta buscarOferta (Integer idOferta){
+        return ofertaRepository.findById(idOferta)
+                .orElseThrow(() ->
+                        new RecursoNaoEncontradoException(
+                                "Oferta não encontrada."
+                        )
+                );
+    }
+
+
+    private void validarPosseDoProponente(
+            PosseFigurinha posse,
+            Usuario proponente
+    ) {
+        if (!posse.getUsuario()
+                .getCpf()
+                .equals(proponente.getCpf())) {
+
+            throw new RegraDeNegocioException(
+                    "A posse informada não pertence ao proponente da oferta."
+            );
+        }
     }
 }

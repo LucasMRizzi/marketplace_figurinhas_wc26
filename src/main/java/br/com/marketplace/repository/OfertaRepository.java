@@ -5,6 +5,8 @@ import br.com.marketplace.entity.enums.StatusOferta;
 import br.com.marketplace.entity.enums.TipoOferta;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.time.LocalDateTime;
+
 import java.util.List;
 
 public interface OfertaRepository extends JpaRepository<Oferta, Integer> {
@@ -28,5 +30,10 @@ public interface OfertaRepository extends JpaRepository<Oferta, Integer> {
     List<Oferta> findByUsuarioProponenteCpfAndTipo(
             String cpf,
             TipoOferta tipo
+    );
+
+    List<Oferta> findByStatusAndPrazoLimiteBefore(
+                StatusOferta status,
+                LocalDateTime dataAtual
     );
 }

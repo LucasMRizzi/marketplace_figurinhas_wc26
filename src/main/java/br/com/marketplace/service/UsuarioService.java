@@ -8,6 +8,7 @@ import br.com.marketplace.exception.RecursoJaExisteException;
 import br.com.marketplace.exception.RecursoNaoEncontradoException;
 import br.com.marketplace.mapper.UsuarioMapper;
 import br.com.marketplace.repository.UsuarioRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -34,6 +35,8 @@ public class UsuarioService {
      * @return UsuarioResponse contendo os dados do usuário recém-criado.
      * @throws RecursoJaExisteException Se o CPF já estiver cadastrado no banco de dados.
      */
+    private final PasswordEncoder passwordEncoder;
+
     @Transactional
     public UsuarioResponse criar(CriarUsuarioRequest request) {
         if (usuarioRepository.existsById(request.cpf())) {
@@ -42,7 +45,15 @@ public class UsuarioService {
             );
         }
 
-        Usuario usuario = usuarioMapper.toEntity(request);
+        if (usuarioRepository.existsByEmailIgnoreCase(request.email())) {
+            throw new RecursoJaExisteException(
+                    "Já existe um usuário cadastrado com este e-mail."
+            );
+        }
+
+        String senhaCodificada = passwordEncoder.encode(request.senha());
+
+        Usuario usuario = usuarioMapper.toEntity(request, senhaCodificada);
 
         Usuario usuario_salvo = usuarioRepository.save(usuario);
 
@@ -88,6 +99,14 @@ public class UsuarioService {
             AtualizarUsuarioRequest request
     ) {
         Usuario usuario = buscarEntidadePorCpf(cpf);
+
+        if (!usuario.getEmail().equals(request.email())
+                && usuarioRepository.existsByEmailIgnoreCase(request.email())) {
+
+            throw new RecursoJaExisteException(
+                    "Já existe um usuário cadastrado com este e-mail."
+            );
+        }
 
         usuarioMapper.updateEntity(usuario, request);
 

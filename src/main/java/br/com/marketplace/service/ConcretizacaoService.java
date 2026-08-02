@@ -5,14 +5,20 @@ import br.com.marketplace.dto.concretizacao.CriarConcretizacaoRequest;
 import br.com.marketplace.entity.Concretizacao;
 import br.com.marketplace.entity.Oferta;
 import br.com.marketplace.entity.Usuario;
+import br.com.marketplace.entity.Venda;
 import br.com.marketplace.exception.RecursoJaExisteException;
 import br.com.marketplace.exception.RecursoNaoEncontradoException;
 import br.com.marketplace.exception.RegraDeNegocioException;
 import br.com.marketplace.mapper.ConcretizacaoMapper;
+import br.com.marketplace.messaging.pagamento.PagamentoSolicitadoEvent;
+import br.com.marketplace.payment.PagamentoGateway;
+import br.com.marketplace.payment.ResultadoPagamento;
 import br.com.marketplace.repository.ConcretizacaoRepository;
 import br.com.marketplace.repository.OfertaRepository;
 import br.com.marketplace.repository.UsuarioRepository;
+import br.com.marketplace.repository.VendaRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,6 +50,8 @@ public class ConcretizacaoService {
      * @throws RegraDeNegocioException       Se a oferta não estiver com status PENDENTE ou se o proponente tentar aceitar a própria oferta.
      * @throws RecursoJaExisteException      Se já existir uma concretização registrada para esta mesma oferta.
      */
+    private final ApplicationEventPublisher eventPublisher;
+
     @Transactional
     public ConcretizacaoResponse criar(
             Integer idOferta,
@@ -85,23 +93,25 @@ public class ConcretizacaoService {
             );
         }
 
-        /* TODO:
-         * Futuramente, antes de concretizar:
-         *
-         * - validar saldo, caso seja venda;
-         * - validar itens solicitados, caso seja troca;
-         * - transferir as posses;
-         * - processar o pagamento.
-         */
-
         Concretizacao concretizacao =
-                concretizacaoMapper.toEntity(
+                new Concretizacao(
                         oferta,
                         aceitante
                 );
 
         Concretizacao salva =
                 concretizacaoRepository.save(concretizacao);
+
+        /*
+         * Garante que o ID seja gerado antes de criar o evento.
+         */
+        concretizacaoRepository.flush();
+
+        eventPublisher.publishEvent(
+                new PagamentoSolicitadoEvent(
+                        salva.getIdConcretizacao()
+                )
+        );
 
         return concretizacaoMapper.toResponse(salva);
     }
@@ -184,6 +194,12 @@ public class ConcretizacaoService {
      * @return Entidade Concretizacao bruta mapeada do banco de dados.
      * @throws RecursoNaoEncontradoException Se a concretização não for encontrada.
      */
+    /*
+     * =========================================================
+     * Buscas Auxiliares
+     * =========================================================
+     */
+
     private Concretizacao buscarEntidade(
             Integer idConcretizacao
     ) {

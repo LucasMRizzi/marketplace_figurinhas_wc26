@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,7 +39,13 @@ public class Concretizacao {
     private StatusPagamento statusPagamento;
 
     @Column(name = "data_do_aceite", nullable = false)
-    private LocalDate dataAceite;
+    private LocalDateTime dataAceite;
+
+    @Column(name = "codigo_transacao", length = 100)
+    private String codigoTransacao;
+
+    @Column(name = "motivo_recusa", length = 255)
+    private String motivoRecusa;
 
     /**
      * =========================================================
@@ -116,30 +122,65 @@ public class Concretizacao {
         this.oferta = oferta;
         this.aceitante = aceitante;
         this.statusPagamento = StatusPagamento.PENDENTE;
-        this.dataAceite = LocalDate.now();
-
-        oferta.concretizar();
+        this.dataAceite = LocalDateTime.now();
     }
 
-    public void iniciarProcessamentoPagamento() {
+    public boolean estaPendente() {
+        return statusPagamento == StatusPagamento.PENDENTE;
+    }
+
+    public boolean estaEmProcessamento() {
+        return statusPagamento == StatusPagamento.PROCESSAMENTO;
+    }
+
+    public boolean pagamentoFinalizado() {
+        return statusPagamento == StatusPagamento.PAGO
+                || statusPagamento == StatusPagamento.RECUSADO;
+    }
+
+    public void iniciarPagamento() {
         if (statusPagamento != StatusPagamento.PENDENTE) {
             throw new IllegalStateException(
-                    "O pagamento não está pendente."
+                    "Apenas pagamentos pendentes podem ser processados."
             );
         }
 
         this.statusPagamento =
-            StatusPagamento.PROCESSAMENTO;
+                StatusPagamento.PROCESSAMENTO;
     }
 
-    public void confirmarPagamento() {
-        if (statusPagamento
-                != StatusPagamento.PROCESSAMENTO) {
+    public void confirmarPagamento(String codigoTransacao) {
+        if (statusPagamento != StatusPagamento.PROCESSAMENTO) {
             throw new IllegalStateException(
-                    "O pagamento não está em processamento."
+                    "O pagamento deve estar em processamento."
+            );
+        }
+
+        if (codigoTransacao == null
+                || codigoTransacao.isBlank()) {
+            throw new IllegalArgumentException(
+                    "O código da transação é obrigatório."
             );
         }
 
         this.statusPagamento = StatusPagamento.PAGO;
+        this.codigoTransacao = codigoTransacao;
+        this.motivoRecusa = null;
+    }
+
+    public void recusarPagamento(String motivo) {
+        if (statusPagamento != StatusPagamento.PROCESSAMENTO) {
+            throw new IllegalStateException(
+                    "O pagamento deve estar em processamento."
+            );
+        }
+
+        this.statusPagamento = StatusPagamento.RECUSADO;
+        this.codigoTransacao = null;
+        this.motivoRecusa = motivo;
+    }
+
+    public Usuario getUsuarioProponente(){
+        return oferta.getUsuarioProponente();
     }
 }
