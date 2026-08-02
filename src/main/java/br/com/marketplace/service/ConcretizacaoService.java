@@ -10,6 +10,7 @@ import br.com.marketplace.exception.RecursoJaExisteException;
 import br.com.marketplace.exception.RecursoNaoEncontradoException;
 import br.com.marketplace.exception.RegraDeNegocioException;
 import br.com.marketplace.mapper.ConcretizacaoMapper;
+import br.com.marketplace.messaging.pagamento.PagamentoSolicitadoEvent;
 import br.com.marketplace.payment.PagamentoGateway;
 import br.com.marketplace.payment.ResultadoPagamento;
 import br.com.marketplace.repository.ConcretizacaoRepository;
@@ -17,6 +18,7 @@ import br.com.marketplace.repository.OfertaRepository;
 import br.com.marketplace.repository.UsuarioRepository;
 import br.com.marketplace.repository.VendaRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,9 +32,8 @@ public class ConcretizacaoService {
     private final OfertaRepository ofertaRepository;
     private final UsuarioRepository usuarioRepository;
     private final ConcretizacaoMapper concretizacaoMapper;
-    private final VendaRepository vendaRepository;
 
-    private final PagamentoGateway pagamentoGateway;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public ConcretizacaoResponse criar(
@@ -76,56 +77,24 @@ public class ConcretizacaoService {
         }
 
         Concretizacao concretizacao =
-                concretizacaoMapper.toEntity(
+                new Concretizacao(
                         oferta,
                         aceitante
                 );
 
-        if (oferta.ehTroca()) {
-            concretizacao.iniciarPagamento();
-
-            concretizacao.confirmarPagamento(
-                    "TROCA-SEM-PAGAMENTO"
-            );
-
-            oferta.concretizar();
-
-            Concretizacao salva =
-                    concretizacaoRepository.save(concretizacao);
-
-            return concretizacaoMapper.toResponse(salva);
-        }
-
-        Venda venda = vendaRepository.findById(idOferta)
-                .orElseThrow(() ->
-                        new RecursoNaoEncontradoException(
-                                "Dados da venda não encontrados."
-                        )
-                );
-
-        concretizacao.iniciarPagamento();
-
-        ResultadoPagamento resultado =
-                pagamentoGateway.processar(
-                        venda.getValorDaProposta(),
-                        aceitante.getCpf(),
-                        oferta.getUsuarioProponente().getCpf()
-                );
-
-        if (resultado.aprovado()) {
-            concretizacao.confirmarPagamento(
-                    resultado.codigoTransacao()
-            );
-
-            oferta.concretizar();
-        } else {
-            concretizacao.recusarPagamento(
-                    resultado.mensagem()
-            );
-        }
-
         Concretizacao salva =
                 concretizacaoRepository.save(concretizacao);
+
+        /*
+         * Garante que o ID seja gerado antes de criar o evento.
+         */
+        concretizacaoRepository.flush();
+
+        eventPublisher.publishEvent(
+                new PagamentoSolicitadoEvent(
+                        salva.getIdConcretizacao()
+                )
+        );
 
         return concretizacaoMapper.toResponse(salva);
     }
@@ -173,6 +142,12 @@ public class ConcretizacaoService {
                 .map(concretizacaoMapper::toResponse)
                 .toList();
     }
+
+    /**
+     * =========================================================
+     * Buscas Auxiliares
+     * =========================================================
+     */
 
     private Concretizacao buscarEntidade(
             Integer idConcretizacao

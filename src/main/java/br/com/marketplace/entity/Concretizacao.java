@@ -123,8 +123,19 @@ public class Concretizacao {
         this.aceitante = aceitante;
         this.statusPagamento = StatusPagamento.PENDENTE;
         this.dataAceite = LocalDateTime.now();
+    }
 
-        oferta.concretizar();
+    public boolean estaPendente() {
+        return statusPagamento == StatusPagamento.PENDENTE;
+    }
+
+    public boolean estaEmProcessamento() {
+        return statusPagamento == StatusPagamento.PROCESSAMENTO;
+    }
+
+    public boolean pagamentoFinalizado() {
+        return statusPagamento == StatusPagamento.PAGO
+                || statusPagamento == StatusPagamento.RECUSADO;
     }
 
     public void iniciarPagamento() {
