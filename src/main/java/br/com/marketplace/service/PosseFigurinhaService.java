@@ -17,6 +17,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+/**
+ * Serviço responsável pelo gerenciamento do inventário pessoal (posses) de figurinhas dos usuários.
+ * Controla quais figurinhas cada usuário tem guardadas para uso (seja para colar no álbum ou para 
+ * oferecer em negociações), lidando de forma inteligente com o incremento e decremento de quantidades.
+ */
 @Service
 @RequiredArgsConstructor
 public class PosseFigurinhaService {
@@ -26,6 +31,16 @@ public class PosseFigurinhaService {
     private final FigurinhaRepository figurinhaRepository;
     private final PosseFigurinhaMapper posseMapper;
 
+    /**
+     * Adiciona uma ou mais cópias de uma figurinha ao inventário do usuário.
+     * O método verifica se o usuário já possui um registro para esta figurinha:
+     * se não possuir, cria um novo registro; se já possuir, apenas atualiza (incrementa) a quantidade.
+     *
+     * @param cpfUsuario CPF do usuário dono do inventário.
+     * @param request    Objeto contendo o código, tipo da figurinha e a quantidade adquirida.
+     * @return PosseFigurinhaResponse com os dados atualizados do registro de posse.
+     * @throws RecursoNaoEncontradoException Se o usuário ou a figurinha do catálogo não existirem.
+     */
     @Transactional
     public PosseFigurinhaResponse adicionar(
             String cpfUsuario,
@@ -77,6 +92,13 @@ public class PosseFigurinhaService {
         return posseMapper.toResponse(posse);
     }
 
+    /**
+     * Busca os detalhes de um registro de posse específico pelo seu identificador.
+     *
+     * @param idPosse Identificador único do registro de posse no banco de dados.
+     * @return PosseFigurinhaResponse contendo os detalhes (usuário, figurinha, quantidade).
+     * @throws RecursoNaoEncontradoException Se o registro não for localizado.
+     */
     @Transactional(readOnly = true)
     public PosseFigurinhaResponse buscar(Integer idPosse) {
         return posseMapper.toResponse(
@@ -84,6 +106,12 @@ public class PosseFigurinhaService {
         );
     }
 
+    /**
+     * Retorna a lista completa do inventário de figurinhas pertencente a um usuário específico.
+     *
+     * @param cpfUsuario CPF do usuário a ser consultado.
+     * @return Lista de PosseFigurinhaResponse, representando tudo o que o usuário tem guardado.
+     */
     @Transactional(readOnly = true)
     public List<PosseFigurinhaResponse> listarPorUsuario(
             String cpfUsuario
@@ -95,6 +123,16 @@ public class PosseFigurinhaService {
                 .toList();
     }
 
+    /**
+     * Deduz uma quantidade específica de figurinhas de um registro de posse.
+     * Caso a subtração faça a quantidade chegar a zero, o registro da posse é 
+     * automaticamente excluído do banco de dados para não deixar "estoques fantasmas".
+     *
+     * @param idPosse    Identificador do registro de posse que sofrerá a dedução.
+     * @param quantidade Número de unidades a serem removidas.
+     * @return PosseFigurinhaResponse com os dados atualizados (ou os últimos dados conhecidos antes da exclusão, se zerar).
+     * @throws RecursoNaoEncontradoException Se o registro de posse não for encontrado.
+     */
     @Transactional
     public PosseFigurinhaResponse removerQuantidade(
             Integer idPosse,
@@ -117,6 +155,13 @@ public class PosseFigurinhaService {
         return posseMapper.toResponse(posse);
     }
 
+    /**
+     * Exclui fisicamente um registro de posse de figurinha de forma forçada e completa, 
+     * ignorando quantas unidades ainda restavam naquele registro.
+     *
+     * @param idPosse Identificador do registro de posse a ser deletado.
+     * @throws RecursoNaoEncontradoException Se o registro de posse não existir.
+     */
     @Transactional
     public void remover(Integer idPosse) {
         PosseFigurinha posse =
@@ -125,6 +170,14 @@ public class PosseFigurinhaService {
         posseRepository.delete(posse);
     }
 
+    /**
+     * Método utilitário privado para buscar a entidade PosseFigurinha 
+     * e centralizar o tratamento de erro de recurso não encontrado.
+     *
+     * @param idPosse Identificador da posse.
+     * @return A entidade PosseFigurinha persistida no banco.
+     * @throws RecursoNaoEncontradoException Se o ID informado não existir no banco.
+     */
     private PosseFigurinha buscarEntidade(Integer idPosse) {
         return posseRepository.findById(idPosse)
                 .orElseThrow(() ->

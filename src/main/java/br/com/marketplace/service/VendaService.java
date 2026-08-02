@@ -18,6 +18,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+/**
+ * Serviço responsável por gerenciar as negociações do tipo Venda no marketplace.
+ * Trabalha em conjunto com a entidade base Oferta, garantindo que toda negociação 
+ * de venda possua uma Oferta matriz associada para controle de status e histórico.
+ */
 @Service
 @RequiredArgsConstructor
 public class VendaService {
@@ -27,6 +32,16 @@ public class VendaService {
     private final UsuarioRepository usuarioRepository;
     private final VendaMapper vendaMapper;
 
+    /**
+     * Cria uma nova proposta de venda no sistema.
+     * O processo ocorre em duas etapas: primeiro, a entidade base (Oferta) é criada e persistida. 
+     * Em seguida, a entidade específica (Venda) é instanciada vinculada à oferta e salva no banco.
+     *
+     * @param cpfProponente CPF do usuário que está propondo a venda.
+     * @param request       Objeto contendo os dados específicos da venda (prazo limite, descrição, preço unitário e quantidade).
+     * @return VendaResponse com os dados da venda recém-criada.
+     * @throws RecursoNaoEncontradoException Se o usuário proponente não existir no banco de dados.
+     */
     @Transactional
     public VendaResponse criar(
             String cpfProponente,
@@ -54,6 +69,13 @@ public class VendaService {
         return vendaMapper.toResponse(vendaSalva);
     }
 
+    /**
+     * Busca os detalhes de uma proposta de venda específica.
+     *
+     * @param idOferta Identificador único da oferta matriz vinculada à venda.
+     * @return VendaResponse contendo os dados formatados.
+     * @throws RecursoNaoEncontradoException Se não existir uma venda associada ao ID informado.
+     */
     @Transactional(readOnly = true)
     public VendaResponse buscar(Integer idOferta) {
         return vendaMapper.toResponse(
@@ -61,6 +83,11 @@ public class VendaService {
         );
     }
 
+    /**
+     * Retorna um histórico com todas as propostas de venda registradas no marketplace.
+     *
+     * @return Lista contendo todas as VendaResponse.
+     */
     @Transactional(readOnly = true)
     public List<VendaResponse> listarTodas() {
         return vendaRepository.findAll()
@@ -69,6 +96,12 @@ public class VendaService {
                 .toList();
     }
 
+    /**
+     * Lista todas as propostas de venda ativas ou inativas criadas por um usuário específico.
+     *
+     * @param cpf CPF do usuário proponente (vendedor).
+     * @return Lista de VendaResponse vinculadas a este usuário.
+     */
     @Transactional(readOnly = true)
     public List<VendaResponse> listarPorProponente(
             String cpf
@@ -80,6 +113,14 @@ public class VendaService {
                 .toList();
     }
 
+    /**
+     * Atualiza os dados financeiros e quantitativos de uma venda em andamento.
+     *
+     * @param idOferta Identificador único da oferta vinculada à venda.
+     * @param request  Objeto contendo os novos valores (preço unitário e quantidade).
+     * @return VendaResponse com os dados atualizados da venda.
+     * @throws RecursoNaoEncontradoException Se a venda não for encontrada para atualização.
+     */
     @Transactional
     public VendaResponse atualizar(
             Integer idOferta,
@@ -92,6 +133,14 @@ public class VendaService {
         return vendaMapper.toResponse(venda);
     }
 
+    /**
+     * Remove uma proposta de venda do sistema.
+     * A exclusão é realizada deletando a entidade matriz (Oferta). Por conta das 
+     * configurações de mapeamento (cascade), a entidade Venda associada também é deletada.
+     *
+     * @param idOferta Identificador da oferta vinculada à venda que será deletada.
+     * @throws RecursoNaoEncontradoException Se a venda não for localizada.
+     */
     @Transactional
     public void remover(Integer idOferta) {
         Venda venda = buscarEntidade(idOferta);
@@ -101,6 +150,14 @@ public class VendaService {
         );
     }
 
+    /**
+     * Método utilitário privado para centralizar a busca por uma entidade Venda
+     * e padronizar o lançamento de exceção.
+     *
+     * @param idOferta Identificador único da oferta associada.
+     * @return A entidade Venda encontrada.
+     * @throws RecursoNaoEncontradoException Se o ID não corresponder a nenhuma venda.
+     */
     private Venda buscarEntidade(Integer idOferta) {
         return vendaRepository.findById(idOferta)
                 .orElseThrow(() ->
@@ -110,6 +167,13 @@ public class VendaService {
                 );
     }
 
+    /**
+     * Método utilitário privado para verificar e instanciar o proponente da venda.
+     *
+     * @param cpf CPF do usuário.
+     * @return A entidade Usuario encontrada no banco.
+     * @throws RecursoNaoEncontradoException Se o usuário não existir.
+     */
     private Usuario buscarUsuario(String cpf) {
         return usuarioRepository.findById(cpf)
                 .orElseThrow(() ->

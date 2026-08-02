@@ -18,6 +18,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+/**
+ * Serviço responsável por gerenciar a finalização (concretização) das negociações.
+ * Representa o momento em que um usuário (aceitante) concorda com os termos de uma 
+ * oferta (venda ou troca) criada por outro usuário (proponente).
+ */
 @Service
 @RequiredArgsConstructor
 public class ConcretizacaoService {
@@ -27,6 +32,18 @@ public class ConcretizacaoService {
     private final UsuarioRepository usuarioRepository;
     private final ConcretizacaoMapper concretizacaoMapper;
 
+    /**
+     * Registra o aceite de uma oferta, gerando uma nova concretização no sistema.
+     * Realiza diversas validações de negócio para garantir que a oferta está elegível 
+     * e que o aceitante é válido (não permitindo, por exemplo, o aceite da própria oferta).
+     *
+     * @param idOferta Identificador da oferta que está sendo aceita.
+     * @param request  Objeto contendo os dados da requisição, como o CPF do usuário aceitante.
+     * @return ConcretizacaoResponse com os dados do acordo firmado.
+     * @throws RecursoNaoEncontradoException Se a oferta ou o usuário aceitante não existirem no banco.
+     * @throws RegraDeNegocioException       Se a oferta não estiver com status PENDENTE ou se o proponente tentar aceitar a própria oferta.
+     * @throws RecursoJaExisteException      Se já existir uma concretização registrada para esta mesma oferta.
+     */
     @Transactional
     public ConcretizacaoResponse criar(
             Integer idOferta,
@@ -89,6 +106,13 @@ public class ConcretizacaoService {
         return concretizacaoMapper.toResponse(salva);
     }
 
+    /**
+     * Recupera os detalhes de uma concretização específica pelo seu ID.
+     *
+     * @param idConcretizacao Identificador único da concretização.
+     * @return ConcretizacaoResponse com os dados formatados.
+     * @throws RecursoNaoEncontradoException Se o ID não for encontrado no banco de dados.
+     */
     @Transactional(readOnly = true)
     public ConcretizacaoResponse buscar(
             Integer idConcretizacao
@@ -98,6 +122,14 @@ public class ConcretizacaoService {
         );
     }
 
+    /**
+     * Busca os dados da concretização associada a uma oferta específica.
+     * Útil para rastrear quem aceitou uma determinada oferta após ela sair do status PENDENTE.
+     *
+     * @param idOferta ID da oferta vinculada à concretização.
+     * @return ConcretizacaoResponse com os dados da negociação finalizada.
+     * @throws RecursoNaoEncontradoException Se a oferta informada ainda não possuir uma concretização.
+     */
     @Transactional(readOnly = true)
     public ConcretizacaoResponse buscarPorOferta(
             Integer idOferta
@@ -114,6 +146,11 @@ public class ConcretizacaoService {
         return concretizacaoMapper.toResponse(concretizacao);
     }
 
+    /**
+     * Retorna um histórico global com todas as concretizações registradas no sistema.
+     *
+     * @return Lista de ConcretizacaoResponse.
+     */
     @Transactional(readOnly = true)
     public List<ConcretizacaoResponse> listarTodas() {
         return concretizacaoRepository.findAll()
@@ -122,6 +159,12 @@ public class ConcretizacaoService {
                 .toList();
     }
 
+    /**
+     * Retorna a lista de todas as ofertas que foram aceitas por um usuário específico.
+     *
+     * @param cpf CPF do usuário aceitante.
+     * @return Lista de ConcretizacaoResponse vinculadas ao usuário como aceitante.
+     */
     @Transactional(readOnly = true)
     public List<ConcretizacaoResponse> listarPorAceitante(
             String cpf
@@ -133,6 +176,14 @@ public class ConcretizacaoService {
                 .toList();
     }
 
+    /**
+     * Método utilitário privado para centralizar a busca por uma entidade Concretizacao
+     * e padronizar o lançamento da exceção caso ela não exista.
+     *
+     * @param idConcretizacao ID da concretização a ser buscada.
+     * @return Entidade Concretizacao bruta mapeada do banco de dados.
+     * @throws RecursoNaoEncontradoException Se a concretização não for encontrada.
+     */
     private Concretizacao buscarEntidade(
             Integer idConcretizacao
     ) {

@@ -19,6 +19,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+/**
+ * Serviço responsável por gerenciar as negociações do tipo Troca (escambo) no marketplace.
+ * Atua em conjunto com a entidade base Oferta, garantindo que toda Troca criada 
+ * possua uma Oferta matriz associada a ela.
+ */
 @Service
 @RequiredArgsConstructor
 public class TrocaService {
@@ -28,6 +33,16 @@ public class TrocaService {
     private final UsuarioRepository usuarioRepository;
     private final TrocaMapper trocaMapper;
 
+    /**
+     * Cria uma nova proposta de troca no sistema. 
+     * Este método realiza a inserção em duas etapas: primeiro gera a entidade matriz (Oferta) 
+     * e, em seguida, cria e vincula a entidade específica (Troca) contendo o prazo e a descrição.
+     *
+     * @param cpfProponente CPF do usuário que está propondo a troca.
+     * @param request       Objeto contendo os dados específicos da troca (prazo limite, descrição, etc.).
+     * @return TrocaResponse com os dados da troca recém-criada.
+     * @throws RecursoNaoEncontradoException Se o usuário proponente não existir no banco de dados.
+     */
     @Transactional
     public TrocaResponse criar(
             String cpfProponente,
@@ -53,6 +68,13 @@ public class TrocaService {
         return trocaMapper.toResponse(trocaSalva);
     }
 
+    /**
+     * Busca os detalhes de uma proposta de troca específica.
+     *
+     * @param idOferta Identificador único da oferta vinculada à troca.
+     * @return TrocaResponse contendo os dados formatados.
+     * @throws RecursoNaoEncontradoException Se não existir uma troca associada ao ID informado.
+     */
     @Transactional(readOnly = true)
     public TrocaResponse buscar(Integer idOferta) {
         return trocaMapper.toResponse(
@@ -60,6 +82,11 @@ public class TrocaService {
         );
     }
 
+    /**
+     * Retorna um histórico com todas as propostas de troca registradas no marketplace.
+     *
+     * @return Lista contendo todas as TrocaResponse.
+     */
     @Transactional(readOnly = true)
     public List<TrocaResponse> listarTodas() {
         return trocaRepository.findAll()
@@ -68,6 +95,12 @@ public class TrocaService {
                 .toList();
     }
 
+    /**
+     * Lista todas as propostas de troca criadas por um usuário específico.
+     *
+     * @param cpf CPF do usuário proponente.
+     * @return Lista de TrocaResponse vinculadas a este usuário.
+     */
     @Transactional(readOnly = true)
     public List<TrocaResponse> listarPorProponente(
             String cpf
@@ -79,6 +112,13 @@ public class TrocaService {
                 .toList();
     }
 
+    /**
+     * Atualiza os dados editáveis de uma proposta de troca em andamento.
+     *
+     * @param idOferta Identificador único da oferta vinculada à troca.
+     * @param request  Objeto contendo os novos dados (prazo limite e descrição).
+     * @throws RecursoNaoEncontradoException Se a troca não for encontrada para atualização.
+     */
     @Transactional
     public void atualizar(
             Integer idOferta,
@@ -92,6 +132,14 @@ public class TrocaService {
         );
     }
 
+    /**
+     * Remove uma proposta de troca do sistema. 
+     * A exclusão é feita deletando a entidade matriz (Oferta), o que deve disparar a 
+     * exclusão em cascata (CascadeType.ALL / orphanRemoval) da Troca associada no banco de dados.
+     *
+     * @param idOferta Identificador da oferta vinculada à troca que será deletada.
+     * @throws RecursoNaoEncontradoException Se a troca não for localizada.
+     */
     @Transactional
     public void remover(Integer idOferta) {
         Troca troca = buscarEntidade(idOferta);
@@ -101,6 +149,14 @@ public class TrocaService {
         );
     }
 
+    /**
+     * Método utilitário privado para centralizar a busca por uma entidade Troca
+     * e padronizar o lançamento da exceção.
+     *
+     * @param idOferta Identificador único da oferta associada.
+     * @return A entidade Troca encontrada.
+     * @throws RecursoNaoEncontradoException Se o ID não corresponder a nenhuma troca.
+     */
     private Troca buscarEntidade(Integer idOferta) {
         return trocaRepository.findById(idOferta)
                 .orElseThrow(() ->
@@ -110,6 +166,13 @@ public class TrocaService {
                 );
     }
 
+    /**
+     * Método utilitário privado para verificar e instanciar o proponente da troca.
+     *
+     * @param cpf CPF do usuário.
+     * @return A entidade Usuario encontrada no banco.
+     * @throws RecursoNaoEncontradoException Se o usuário não existir.
+     */
     private Usuario buscarUsuario(String cpf) {
         return usuarioRepository.findById(cpf)
                 .orElseThrow(() ->
