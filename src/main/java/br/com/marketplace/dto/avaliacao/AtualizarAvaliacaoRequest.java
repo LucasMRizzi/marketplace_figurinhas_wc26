@@ -19,3 +19,10 @@ public record AtualizarAvaliacaoRequest(
         String comentario
 ) {
 }
+
+/** Exemplo de arquivo json:
+ * {
+  "nota": 5.00,
+  "comentario": "Atualizando a nota, o usuário me ajudou muito depois."
+  }
+ */

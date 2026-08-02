@@ -21,3 +21,10 @@ public record AtualizarFigurinhaRequest(
         BigDecimal valorDeMercado
 ) {
 }
+
+/** Exemplo de arquivo json:
+ * {
+  "nome": "Lionel Messi (Legend)",
+  "valorDeMercado": 75.50
+  }
+ */

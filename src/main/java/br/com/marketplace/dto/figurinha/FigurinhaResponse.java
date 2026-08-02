@@ -11,3 +11,13 @@ public record FigurinhaResponse(
         BigDecimal valorDeMercado
 ) {
 }
+
+
+/** Exemplo de arquivo json:
+ * {
+  "codigo": "ARG10",
+  "tipo": "NORMAL",
+  "nome": "Lionel Messi (Legend)",
+  "valorDeMercado": 75.50
+  }
+ */

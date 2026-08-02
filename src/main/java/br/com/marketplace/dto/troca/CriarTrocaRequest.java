@@ -30,3 +30,25 @@ public record CriarTrocaRequest(
         List<@Valid CriarItemSolicitadoRequest> itensSolicitados
 ) {
 }
+
+/** Exemplo de arquivo json:
+ * {
+  "prazoLimite": "2026-08-10T23:59:59",
+  "descricao": "Troco minhas repetidas do Brasil por jogadores da França.",
+  "itensOfertados": [
+    {
+      "idPosse": 150,
+      "quantidadeOfertada": 1,
+      "condicao": "PERFEITA",
+      "foto": "url-da-foto.jpg"
+    }
+  ],
+  "itensSolicitados": [
+    {
+      "codigoFigurinha": "FRA07",
+      "tipoFigurinha": "NORMAL",
+      "quantidade": 1
+    }
+  ]
+  }
+ */

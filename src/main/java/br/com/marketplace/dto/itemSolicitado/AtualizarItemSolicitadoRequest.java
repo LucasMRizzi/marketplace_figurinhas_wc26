@@ -10,3 +10,9 @@ public record AtualizarItemSolicitadoRequest(
         Integer quantidade
 ) {
 }
+
+/** Exemplo de arquivo json:
+ * {
+  "quantidade": 3
+  }
+ */

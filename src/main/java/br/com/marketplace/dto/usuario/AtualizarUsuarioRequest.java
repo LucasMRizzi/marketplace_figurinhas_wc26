@@ -22,3 +22,18 @@ public record AtualizarUsuarioRequest(
         EnderecoRequest endereco
 ) {
 }
+
+/** Exemplo de arquivo json:
+ * {
+  "nome": "João da Silva Sauro",
+  "email": "joao.novo@email.com",
+  "telefone": "(19) 98888-8888",
+  "endereco": {
+    "logradouro": "Avenida Brasil",
+    "numero": 1000,
+    "caixaPostal": "N/A",
+    "cidade": "Rio Claro",
+    "cep": "13506-000"
+  }
+  }
+ */

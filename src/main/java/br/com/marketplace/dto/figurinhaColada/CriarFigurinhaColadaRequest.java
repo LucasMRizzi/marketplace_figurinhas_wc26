@@ -15,3 +15,10 @@ public record CriarFigurinhaColadaRequest(
         TipoFigurinha tipoFigurinha
 ) {
 }
+
+/** Exemplo de arquivo json:
+ * {
+  "codigoFigurinha": "BRA10",
+  "tipoFigurinha": "BRILHANTE"
+  }
+ */

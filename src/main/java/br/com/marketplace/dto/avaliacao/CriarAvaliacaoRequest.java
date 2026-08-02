@@ -33,3 +33,11 @@ public record CriarAvaliacaoRequest(
         String comentario
 ) {
 }
+
+/** Exemplo de arquivo json:
+ * {
+  "cpfAvaliador": "111.222.333-44",
+  "nota": 4.50,
+  "comentario": "Ótimo usuário, a figurinha chegou em perfeito estado!"
+  }
+ */

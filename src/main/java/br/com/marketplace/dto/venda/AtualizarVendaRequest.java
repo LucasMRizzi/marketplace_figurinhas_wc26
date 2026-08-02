@@ -27,3 +27,11 @@ public record AtualizarVendaRequest(
         String descricao
 ) {
 }
+
+/** Exemplo de arquivo json:
+ * {
+  "valorDaProposta": 180.00,
+  "prazoLimite": "2026-08-25T23:59:59",
+  "descricao": "Baixei o preço pra vender rápido!"
+  }
+ */
