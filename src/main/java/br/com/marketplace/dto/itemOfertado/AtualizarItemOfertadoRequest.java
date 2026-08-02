@@ -21,3 +21,11 @@ public record AtualizarItemOfertadoRequest(
         String foto
 ) {
 }
+
+/** Exemplo de arquivo json:
+ * {
+  "quantidadeOfertada": 1,
+  "condicao": "COM_MARCAS_DE_USO",
+  "foto": "https://meubucket.com/fotos/figurinha-bra10-nova.jpg"
+  }
+ */

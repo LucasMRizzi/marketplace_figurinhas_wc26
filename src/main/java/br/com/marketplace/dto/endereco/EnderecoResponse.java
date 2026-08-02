@@ -8,3 +8,5 @@ public record EnderecoResponse(
         String cep
 ) {
 }
+
+/**Contemplado em "UsuarioResponse.java" */

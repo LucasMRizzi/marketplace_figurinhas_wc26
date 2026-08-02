@@ -10,3 +10,9 @@ public record AtualizarPosseFigurinhaRequest (
         Integer quantidade
 ){
 }
+
+/** Exemplo de arquivo json:
+ * {
+  "quantidade": 2
+  }
+ */

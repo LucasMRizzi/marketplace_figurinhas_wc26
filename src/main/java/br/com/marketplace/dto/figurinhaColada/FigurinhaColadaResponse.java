@@ -10,3 +10,13 @@ public record FigurinhaColadaResponse (
         String nomeFigurinha
 ) {
 }
+
+/** Exemplo de arquivo json:
+ * {
+  "nomeAlbum": "Copa do Mundo 2026",
+  "cpfUsuario": "123.456.789-00",
+  "codigoFigurinha": "BRA10",
+  "tipoFigurinha": "BRILHANTE",
+  "nomeFigurinha": "Vinícius Júnior"
+  }
+ */

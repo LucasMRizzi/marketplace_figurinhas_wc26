@@ -20,3 +20,11 @@ public record CriarDesejaFigurinhaRequest(
 ) {
 
 }
+
+/** Exemplo de arquivo json:
+ * {
+  "cpfUsuario": "123.456.789-00",
+  "codigoFigurinha": "BRA10",
+  "tipoFigurinha": "BRILHANTE"
+  }
+ */

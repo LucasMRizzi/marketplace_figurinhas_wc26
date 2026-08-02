@@ -10,3 +10,9 @@ public record CriarConcretizacaoRequest(
         String cpfAceitante
 ) {
 }
+
+/** Exemplo de arquivo json:
+ * {
+  "cpfAceitante": "999.888.777-66"
+  }
+ */
