@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-BR"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Criar conta</title>
+</head>
+<body>
+
+<h1>Criar conta</h1>
+
+<form th:action="@{/registro}" method="post">
+    <label>CPF</label>
+    <input name="cpf" required>
+
+    <label>Nome</label>
+    <input name="nome" required>
+
+    <label>E-mail</label>
+    <input name="email" type="email" required>
+
+    <label>Telefone</label>
+    <input name="telefone" required>
+
+    <label>Senha</label>
+    <input name="senha" type="password" required>
+
+    <label>Logradouro</label>
+    <input name="logradouro" required>
+
+    <label>Número</label>
+    <input name="numero" type="number" required>
+
+    <label>Caixa postal</label>
+    <input name="caixaPostal" required>
+
+    <label>Cidade</label>
+    <input name="cidade" required>
+
+    <label>CEP</label>
+    <input name="cep" required>
+
+    <button type="submit">Cadastrar</button>
+</form>
+
+<a th:href="@{/login}">
+    Já tenho uma conta
+</a>
+
+</body>
+</html>
