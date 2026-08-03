@@ -1,6 +1,7 @@
 package br.com.marketplace.config;
 
 import br.com.marketplace.security.UsuarioDetailsService;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -49,25 +50,24 @@ public class SecurityConfig {
 
         return http
                 .csrf(csrf -> csrf
-                        .ignoringRequestMatchers("/api/**")
+                        .ignoringRequestMatchers(
+                                "/api/**",
+                                "/login",
+                                "/logout"
+                        )
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/login",
-                                "/registro",
-                                "/css/**",
-                                "/js/**",
-                                "/images/**",
                                 "/swagger-ui/**",
+                                "/swagger-ui.html",
                                 "/v3/api-docs/**",
                                 "/error"
                         ).permitAll()
 
                         .requestMatchers(
                                 HttpMethod.POST,
-                                "/login",
-                                "/registro",
-                                "/api/usuarios"
+                                "/api/usuarios",
+                                "/login"
                         ).permitAll()
 
                         .anyRequest().authenticated()
@@ -76,23 +76,29 @@ public class SecurityConfig {
                 .authenticationProvider(authenticationProvider())
 
                 .formLogin(form -> form
-                        .loginPage("/login")
                         .loginProcessingUrl("/login")
                         .usernameParameter("email")
                         .passwordParameter("senha")
-                        .defaultSuccessUrl("/", true)
-                        .failureUrl("/login?erro")
+                        .successHandler((request, response, authentication) -> {
+                            response.setStatus(HttpServletResponse.SC_OK);
+                        })
+                        .failureHandler((request, response, exception) -> {
+                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                        })
                         .permitAll()
                 )
 
                 .logout(logout -> logout
                         .logoutUrl("/logout")
-                        .logoutSuccessUrl("/login?logout")
+                        .logoutSuccessHandler(
+                                (request, response, authentication) ->
+                                        response.setStatus(
+                                                HttpServletResponse.SC_NO_CONTENT
+                                        )
+                        )
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID")
-                        .permitAll()
                 )
-
                 .build();
     }
 
