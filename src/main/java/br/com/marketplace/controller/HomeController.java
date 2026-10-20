@@ -6,9 +6,20 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class HomeController {
 
-    @GetMapping("/")
-    public String home() {
-        return "index";
+    @GetMapping({
+            "/",
+            "/login",
+            "/registro",
+            "/ofertas",
+            "/ofertas/**",
+            "/inventario",
+            "/colecao",
+            "/negociacoes",
+            "/negociacoes/**",
+            "/perfil"
+    })
+    public String frontend() {
+        return "forward:/index.html";
     }
 
 }

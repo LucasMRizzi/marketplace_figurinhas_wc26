@@ -58,9 +58,12 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/swagger-ui/**",
-                                "/swagger-ui.html",
-                                "/v3/api-docs/**",
+                                "/",
+                                "/index.html",
+                                "/assets/**",
+                                "/favicon.ico",
+                                "/login",
+                                "/registro",
                                 "/error"
                         ).permitAll()
 
@@ -76,6 +79,7 @@ public class SecurityConfig {
                 .authenticationProvider(authenticationProvider())
 
                 .formLogin(form -> form
+                        .loginPage("/login")
                         .loginProcessingUrl("/login")
                         .usernameParameter("email")
                         .passwordParameter("senha")
