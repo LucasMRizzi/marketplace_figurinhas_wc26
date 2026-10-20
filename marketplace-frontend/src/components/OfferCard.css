@@ -1,0 +1,30 @@
+.market-offer-card { display: flex; flex-direction: column; min-width: 0; overflow: hidden; background: #fff; color: #122033; text-decoration: none; border: 1px solid #e1e8f0; border-radius: 18px; box-shadow: 0 8px 28px #12203309; transition: transform .18s, box-shadow .18s; }
+.market-offer-card:hover { transform: translateY(-3px); box-shadow: 0 14px 32px #12203315; }
+.market-offer-card:focus-visible { outline: 3px solid #0b6795; outline-offset: 4px; }
+.market-offer-photo { height: 210px; position: relative; background: linear-gradient(135deg, #eaf3f6, #d7e9ef); overflow: hidden; }
+.market-offer-photo > img { width: 100%; height: 100%; object-fit: contain; padding: 12px; box-sizing: border-box; }
+.market-offer-placeholder { height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 10px; color: #648594; font-size: 12px; }
+.market-offer-type, .market-offer-deadline { position: absolute; font-size: 12px; padding: 7px 11px; border-radius: 8px; }
+.market-offer-type { top: 14px; left: 14px; font-weight: 700; background: #fff; color: #0b6089; box-shadow: 0 2px 8px #1220330d; }
+.market-offer-type.is-trade { color: #765100; background: #fff5d7; }
+.market-offer-deadline { right: 12px; bottom: 12px; background: #ffffffed; color: #40596a; }
+.market-offer-body { padding: 20px; display: flex; flex-direction: column; flex: 1; gap: 16px; }
+.market-offer-body h3 { margin: 0; font-size: 20px; line-height: 1.3; overflow-wrap: anywhere; }
+.market-offer-description { margin: -8px 0 0; color: #6a7c91; font-size: 14px; line-height: 1.55; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.market-offer-items { display: grid; gap: 7px; }
+.market-offer-item { display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 10px; background: #f4f7fa; min-width: 0; }
+.market-offer-code { background: #fff0bd; color: #735100; border: 1px solid #f1db91; border-radius: 6px; padding: 6px 8px; font-size: 12px; font-weight: 800; overflow-wrap: anywhere; }
+.market-offer-item strong { display: block; font-size: 13px; overflow-wrap: anywhere; }
+.market-offer-item small, .market-offer-seller small, .market-offer-footer small { display: block; color: #6a7c91; font-size: 12px; margin-top: 3px; }
+.market-offer-seller { display: flex; align-items: center; gap: 9px; margin-top: auto; }
+.market-offer-avatar { width: 36px; height: 36px; flex-shrink: 0; display: grid; place-items: center; border-radius: 50%; background: #e7eff6; color: #0c3453; font-size: 12px; font-weight: 800; }
+.market-offer-seller-name { flex: 1; min-width: 0; }
+.market-offer-seller-name strong { display: block; font-size: 13px; overflow-wrap: anywhere; }
+.market-offer-rating { font-size: 13px; font-weight: 700; text-align: right; flex-shrink: 0; }
+.market-offer-rating > span { color: #e6a300; }
+.market-offer-rating small { font-weight: 400; }
+.market-offer-footer { border-top: 1px solid #e8edf3; padding-top: 16px; display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.market-offer-footer strong { display: block; margin-top: 4px; color: #0c3453; font-size: 19px; }
+.market-offer-action { background: #0b6089; color: white; padding: 10px 13px; border-radius: 9px; font-weight: 700; font-size: 13px; white-space: nowrap; }
+.market-offer-no-items { font-size: 13px; color: #6a7c91; }
+@media (prefers-reduced-motion: reduce) { .market-offer-card { transition: none; } .market-offer-card:hover { transform: none; } }

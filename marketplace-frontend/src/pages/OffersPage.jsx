@@ -1,24 +1,51 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { getOffers } from '../services/api';
+import { searchOffers } from '../services/api';
+import OfferCard from '../components/OfferCard';
+
+const INITIAL_FILTERS = {
+  tipos: [], tiposFigurinha: [], valorMinimo: '', valorMaximo: '', cidade: '', termo: ''
+};
+
+const FILTER_GROUPS = [
+  { key: 'tipos', label: 'Tipo de negociação', options: [['VENDA', 'Venda'], ['TROCA', 'Troca']] },
+  { key: 'tiposFigurinha', label: 'Raridade da figurinha', options: [['COMUM', 'Comum'], ['LEGEND_COMUM', 'Legend comum'], ['LEGEND_BRONZE', 'Legend bronze'], ['LEGEND_PRATA', 'Legend prata'], ['LEGEND_OURO', 'Legend ouro']] }
+];
 
 export default function OffersPage() {
+  const [draft, setDraft] = useState(INITIAL_FILTERS);
+  const [filters, setFilters] = useState(INITIAL_FILTERS);
   const [offers, setOffers] = useState([]);
-  const [filter, setFilter] = useState('TODAS');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
   useEffect(() => {
-    getOffers()
+    setLoading(true);
+    setError('');
+    searchOffers(filters)
       .then((data) => setOffers(Array.isArray(data) ? data : data.content ?? []))
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
-  }, []);
+  }, [filters]);
 
-  const filtered = useMemo(() => {
-    if (filter === 'TODAS') return offers;
-    return offers.filter((offer) => offer.tipo === filter);
-  }, [offers, filter]);
+  function toggle(group, value) {
+    setDraft((current) => ({
+      ...current,
+      [group]: current[group].includes(value)
+        ? current[group].filter((item) => item !== value)
+        : [...current[group], value]
+    }));
+  }
+
+  function applyFilters(event) {
+    event.preventDefault();
+    setFilters({ ...draft });
+  }
+
+  function clearFilters() {
+    setDraft(INITIAL_FILTERS);
+    setFilters(INITIAL_FILTERS);
+  }
 
   return (
     <section>
@@ -26,74 +53,37 @@ export default function OffersPage() {
         <div>
           <span className="eyebrow">MARKETPLACE</span>
           <h1>Ofertas disponíveis</h1>
-          <p>Encontre oportunidades de venda e troca publicadas pela comunidade.</p>
+          <p>Use os filtros para encontrar uma negociação que combine com sua coleção.</p>
         </div>
         <Link className="primary-button" to="/ofertas/nova">Criar oferta</Link>
       </div>
 
-      <div className="filter-row">
-        {['TODAS', 'VENDA', 'TROCA'].map((value) => (
-          <button
-            key={value}
-            className={filter === value ? 'filter active' : 'filter'}
-            onClick={() => setFilter(value)}
-          >
-            {value === 'TODAS' ? 'Todas' : value === 'VENDA' ? 'Vendas' : 'Trocas'}
-          </button>
-        ))}
-      </div>
+      <div className="marketplace-layout">
+        <aside className="commerce-filters">
+          <div className="filter-header"><div><span className="eyebrow">FILTROS</span><h2>Refine sua busca</h2></div><button type="button" className="clear-button" onClick={clearFilters}>Limpar</button></div>
+          <form onSubmit={applyFilters}>
+            <label className="filter-search">Buscar
+              <input value={draft.termo} onChange={(event) => setDraft((current) => ({ ...current, termo: event.target.value }))} placeholder="Descrição, nome ou CPF" />
+            </label>
+            <label className="filter-search">Cidade do proponente
+              <input value={draft.cidade} onChange={(event) => setDraft((current) => ({ ...current, cidade: event.target.value }))} placeholder="Ex.: Rio Claro" />
+            </label>
+            <div className="price-fields"><label>Valor mínimo<input type="number" min="0" step="0.01" value={draft.valorMinimo} onChange={(event) => setDraft((current) => ({ ...current, valorMinimo: event.target.value }))} /></label><label>Valor máximo<input type="number" min="0" step="0.01" value={draft.valorMaximo} onChange={(event) => setDraft((current) => ({ ...current, valorMaximo: event.target.value }))} /></label></div>
+            {FILTER_GROUPS.map((group) => <fieldset className="filter-group" key={group.key}><legend>{group.label}</legend>{group.options.map(([value, label]) => <label className="check-option" key={value}><input type="checkbox" checked={draft[group.key].includes(value)} onChange={() => toggle(group.key, value)} /><span>{label}</span></label>)}</fieldset>)}
+            <button className="primary-button filter-submit">Aplicar filtros</button>
+          </form>
+        </aside>
 
-      {loading && <div className="empty-state">Carregando ofertas...</div>}
-      {error && <div className="alert error">{error}</div>}
-
-      {!loading && !error && filtered.length === 0 && (
-        <div className="empty-state">Nenhuma oferta encontrada.</div>
-      )}
-
-      <div className="offers-grid">
-        {filtered.map((offer) => (
-          <article className="offer-card" key={offer.idOferta}>
-            <div className="offer-card-top">
-              <span className={`badge ${offer.tipo?.toLowerCase()}`}>{offer.tipo}</span>
-              <span className="status">{offer.status}</span>
-            </div>
-
-            <h3>Oferta #{offer.idOferta}</h3>
-            <p>{offer.descricao || 'Oferta publicada no marketplace.'}</p>
-
-            <dl>
-              <div>
-                <dt>Valor de mercado</dt>
-                <dd>{formatMoney(offer.valorDeMercado)}</dd>
-              </div>
-              <div>
-                <dt>Prazo</dt>
-                <dd>{formatDate(offer.prazoLimite)}</dd>
-              </div>
-              <div>
-                <dt>Proponente</dt>
-                <dd>{offer.cpfProponente || offer.usuarioProponente || '—'}</dd>
-              </div>
-            </dl>
-          </article>
-        ))}
+        <div className="offers-results">
+          <div className="results-header"><strong>{loading ? 'Buscando...' : `${offers.length} oferta(s) encontrada(s)`}</strong><span>Resultados calculados no servidor</span></div>
+          {error && <div className="alert error">{error}</div>}
+          {!loading && !error && offers.length === 0 && <div className="empty-state">Nenhuma oferta corresponde aos filtros selecionados.</div>}
+          <div className="offers-grid">
+            {offers.map((offer) => <OfferCard key={offer.idOferta} offer={offer} />)}
+          </div>
+        </div>
       </div>
     </section>
   );
 }
 
-function formatMoney(value) {
-  if (value === null || value === undefined) return '—';
-  return new Intl.NumberFormat('pt-BR', {
-    style: 'currency',
-    currency: 'BRL'
-  }).format(value);
-}
-
-function formatDate(value) {
-  if (!value) return '—';
-  return new Intl.DateTimeFormat('pt-BR', {
-    dateStyle: 'short',
-    timeStyle: 'short'
-  }).format(new Date(value));
-}

@@ -6,6 +6,13 @@ import RegisterPage from './pages/RegisterPage';
 import OffersPage from './pages/OffersPage';
 import CreateOfferPage from './pages/CreateOfferPage';
 import InventoryPage from './pages/InventoryPage';
+import OfferDetailPage from './pages/OfferDetailPage';
+import CollectionPage from './pages/CollectionPage';
+import NegotiationsPage from './pages/NegotiationsPage';
+import ProfilePage from './pages/ProfilePage';
+import MyOffersPage from './pages/MyOffersPage';
+import TradeProposalPage from './pages/TradeProposalPage';
+import ProposalDetailPage from './pages/ProposalDetailPage';
 
 export default function App() {
   return (
@@ -16,8 +23,15 @@ export default function App() {
       <Route element={<ProtectedRoute />}>
         <Route element={<Layout />}>
           <Route path="/ofertas" element={<OffersPage />} />
+          <Route path="/ofertas/minhas" element={<MyOffersPage />} />
           <Route path="/ofertas/nova" element={<CreateOfferPage />} />
+          <Route path="/ofertas/:idOferta" element={<OfferDetailPage />} />
+          <Route path="/ofertas/:idOferta/propor-troca" element={<TradeProposalPage />} />
           <Route path="/inventario" element={<InventoryPage />} />
+          <Route path="/colecao" element={<CollectionPage />} />
+          <Route path="/negociacoes" element={<NegotiationsPage />} />
+          <Route path="/negociacoes/propostas/:idProposta" element={<ProposalDetailPage />} />
+          <Route path="/perfil" element={<ProfilePage />} />
         </Route>
       </Route>
 

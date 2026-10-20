@@ -23,6 +23,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Serviço responsável por gerenciar a finalização (concretização) das negociações.
@@ -67,6 +69,12 @@ public class ConcretizacaoService {
         if (!oferta.estaPendente()) {
             throw new RegraDeNegocioException(
                     "Apenas ofertas pendentes podem ser aceitas."
+            );
+        }
+
+        if (oferta.ehTroca()) {
+            throw new RegraDeNegocioException(
+                    "Para aceitar uma troca, envie uma proposta com as suas figurinhas."
             );
         }
 
@@ -182,6 +190,19 @@ public class ConcretizacaoService {
         return concretizacaoRepository
                 .findByAceitanteCpf(cpf)
                 .stream()
+                .map(concretizacaoMapper::toResponse)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<ConcretizacaoResponse> listarDoUsuario(String cpf) {
+        Map<Integer, Concretizacao> unicas = new LinkedHashMap<>();
+        concretizacaoRepository.findByOfertaUsuarioProponenteCpf(cpf)
+                .forEach(item -> unicas.put(item.getIdConcretizacao(), item));
+        concretizacaoRepository.findByAceitanteCpf(cpf)
+                .forEach(item -> unicas.put(item.getIdConcretizacao(), item));
+        return unicas.values().stream()
+                .sorted((a, b) -> b.getDataAceite().compareTo(a.getDataAceite()))
                 .map(concretizacaoMapper::toResponse)
                 .toList();
     }

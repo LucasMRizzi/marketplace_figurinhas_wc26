@@ -194,9 +194,9 @@ public class Usuario {
             );
         }
 
-        if (cpf.length() > 14) {
+        if (!cpf.matches("\\d{11}")) {
             throw new IllegalArgumentException(
-                    "O CPF não pode ter mais de 14 caracteres."
+                    "O CPF deve ser armazenado com 11 números."
             );
         }
     }
@@ -228,9 +228,9 @@ public class Usuario {
             );
         }
 
-        if (telefone.length() > 15) {
+        if (!telefone.matches("\\d{10,11}")) {
             throw new IllegalArgumentException(
-                    "O telefone não pode ter mais de 15 caracteres."
+                    "O telefone deve ser armazenado com DDD e 10 ou 11 números."
             );
         }
     }

@@ -273,3 +273,39 @@ CREATE TABLE Item_Solicitado
     CONSTRAINT ck_item_solicitado_quantidade
         CHECK (quantidade > 0)
 );
+
+CREATE TABLE Proposta_Troca
+(
+    id_proposta SERIAL PRIMARY KEY,
+    id_oferta INT NOT NULL,
+    solicitante VARCHAR(14) NOT NULL,
+    status VARCHAR(20) NOT NULL,
+    data_criacao TIMESTAMP NOT NULL,
+    data_resposta TIMESTAMP,
+
+    CONSTRAINT fk_proposta_troca_oferta FOREIGN KEY (id_oferta)
+        REFERENCES Oferta(id_oferta),
+    CONSTRAINT fk_proposta_troca_solicitante FOREIGN KEY (solicitante)
+        REFERENCES Usuario(cpf),
+    CONSTRAINT ck_proposta_troca_status CHECK
+        (status IN ('PENDENTE', 'ACEITA', 'RECUSADA', 'CANCELADA'))
+);
+
+CREATE TABLE Item_Proposta_Troca
+(
+    id_item_proposta SERIAL PRIMARY KEY,
+    id_proposta INT NOT NULL,
+    id_posse INT NOT NULL,
+    quantidade INT NOT NULL,
+    condicao condicao NOT NULL,
+    foto VARCHAR(255),
+
+    CONSTRAINT fk_item_proposta FOREIGN KEY (id_proposta)
+        REFERENCES Proposta_Troca(id_proposta) ON DELETE CASCADE,
+    CONSTRAINT fk_item_proposta_posse FOREIGN KEY (id_posse)
+        REFERENCES Possui_Figurinha(id_posse),
+    CONSTRAINT ck_item_proposta_quantidade CHECK (quantidade > 0)
+);
+
+CREATE INDEX idx_proposta_troca_oferta ON Proposta_Troca(id_oferta);
+CREATE INDEX idx_proposta_troca_solicitante ON Proposta_Troca(solicitante);

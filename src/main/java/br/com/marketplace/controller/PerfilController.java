@@ -2,7 +2,6 @@ package br.com.marketplace.controller;
 
 import br.com.marketplace.dto.usuario.AtualizarUsuarioRequest;
 import br.com.marketplace.dto.usuario.UsuarioResponse;
-import br.com.marketplace.mapper.UsuarioMapper;
 import br.com.marketplace.security.UsuarioDetails;
 import br.com.marketplace.service.UsuarioService;
 import jakarta.validation.Valid;
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class PerfilController {
 
-    private final UsuarioMapper usuarioMapper;
     private final UsuarioService usuarioService;
 
     @GetMapping
@@ -23,9 +21,7 @@ public class PerfilController {
             @AuthenticationPrincipal
             UsuarioDetails usuarioDetails
     ) {
-        return usuarioMapper.toResponse(
-                usuarioDetails.getUsuario()
-        );
+        return usuarioService.buscarPorCpf(usuarioDetails.getUsuario().getCpf());
     }
 
     @PutMapping

@@ -3,6 +3,7 @@ package br.com.marketplace.dto.usuario;
 import br.com.marketplace.dto.endereco.EnderecoRequest;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.Pattern;
 
 public record AtualizarUsuarioRequest(
 
@@ -16,6 +17,7 @@ public record AtualizarUsuarioRequest(
 
         @NotNull(message = "O telefone não pode ser nulo.")
         @Size(max = 15, message = "O telefone não pode ser maior que 15 caracteres.")
+        @Pattern(regexp = "(?:\\d{10,11}|\\(\\d{2}\\) ?\\d{4,5}-\\d{4})", message = "O telefone deve conter DDD e 10 ou 11 números.")
         String telefone,
 
         @NotNull(message = "O endereco não pode ser nulo.")

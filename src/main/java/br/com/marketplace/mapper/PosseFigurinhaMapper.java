@@ -30,7 +30,9 @@ public class PosseFigurinhaMapper {
                 posse_figurinha.getUsuario().getCpf(),
                 posse_figurinha.getFigurinha().getCodigo(),
                 posse_figurinha.getFigurinha().getTipo(),
-                posse_figurinha.getQuantidade()
+                posse_figurinha.getFigurinha().getNome(),
+                posse_figurinha.getQuantidade(),
+                posse_figurinha.getFigurinha().getValorDeMercado()
         );
     }
 }

@@ -15,8 +15,19 @@ public record OfertaResponse (
         LocalDateTime prazoLimite,
         String descricao,
         BigDecimal valorDeMercado,
-        String cpfProponente
+        String cpfProponente,
+        String nomeProponente,
+        String cidadeProponente,
+        BigDecimal avaliacaoProponente,
+        BigDecimal valorDaProposta,
+        java.util.List<ItemCardResponse> itensOfertados,
+        java.util.List<ItemSolicitadoResponse> itensSolicitados
 ) {
+    public record ItemCardResponse(Integer idItem, String codigo, String nome,
+            String raridade, Integer quantidade, String condicao, String foto,
+            BigDecimal valorUnitario, BigDecimal valorTotal) {}
+    public record ItemSolicitadoResponse(String codigo, String nome,
+            String raridade, Integer quantidade) {}
 }
 
 /** Exemplo de arquivo json:

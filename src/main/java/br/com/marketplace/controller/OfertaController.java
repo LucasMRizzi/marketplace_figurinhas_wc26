@@ -3,11 +3,15 @@ package br.com.marketplace.controller;
 import br.com.marketplace.dto.oferta.OfertaResponse;
 import br.com.marketplace.entity.enums.StatusOferta;
 import br.com.marketplace.entity.enums.TipoOferta;
+import br.com.marketplace.entity.enums.TipoFigurinha;
 import br.com.marketplace.service.OfertaService;
+import br.com.marketplace.security.UsuarioDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 import java.util.List;
+import java.math.BigDecimal;
 
 @RestController
 @RequestMapping("/api/ofertas")
@@ -27,7 +31,23 @@ public class OfertaController {
         return ofertaService.listar(tipo, status);
     }
 
-    @GetMapping("/{idOferta}")
+    @GetMapping("/busca")
+    public List<OfertaResponse> buscarAvancado(
+            @RequestParam(required = false) List<TipoOferta> tipos,
+            @RequestParam(required = false) List<TipoFigurinha> tiposFigurinha,
+            @RequestParam(required = false) BigDecimal valorMinimo,
+            @RequestParam(required = false) BigDecimal valorMaximo,
+            @RequestParam(required = false) String cidade,
+            @RequestParam(required = false) String termo,
+            @AuthenticationPrincipal UsuarioDetails usuarioDetails
+    ) {
+        return ofertaService.buscarAvancado(
+                tipos, tiposFigurinha, valorMinimo, valorMaximo, cidade, termo,
+                usuarioDetails.getUsuario().getCpf()
+        );
+    }
+
+    @GetMapping("/detalhes/{idOferta}")
     public OfertaResponse buscar(
             @PathVariable Integer idOferta
     ) {

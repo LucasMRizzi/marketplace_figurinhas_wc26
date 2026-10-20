@@ -168,6 +168,15 @@ public class Concretizacao {
         this.motivoRecusa = null;
     }
 
+    public void confirmarTroca(String codigoTransacao) {
+        if (statusPagamento != StatusPagamento.PENDENTE) {
+            throw new IllegalStateException("A troca deve estar pendente.");
+        }
+        this.statusPagamento = StatusPagamento.PAGO;
+        this.codigoTransacao = codigoTransacao;
+        this.motivoRecusa = null;
+    }
+
     public void recusarPagamento(String motivo) {
         if (statusPagamento != StatusPagamento.PROCESSAMENTO) {
             throw new IllegalStateException(

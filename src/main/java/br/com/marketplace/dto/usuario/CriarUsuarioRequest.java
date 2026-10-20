@@ -1,26 +1,33 @@
 package br.com.marketplace.dto.usuario;
 
 import br.com.marketplace.dto.endereco.EnderecoRequest;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.Pattern;
+import org.hibernate.validator.constraints.br.CPF;
 
 public record CriarUsuarioRequest(
 
-        @NotNull(message = "O cpf não pode ser nulo.")
+        @NotBlank(message = "O CPF é obrigatório.")
         @Size(max = 14, message = "O cpf não pode ser maior que 14 caracteres.")
+        @Pattern(regexp = "(?:\\d{11}|\\d{3}\\.\\d{3}\\.\\d{3}-\\d{2})", message = "O CPF deve conter 11 números.")
+        @CPF(message = "O CPF informado é inválido.")
         String cpf,
 
-        @NotNull(message = "O nome não pode ser nulo.")
+        @NotBlank(message = "O nome é obrigatório.")
         @Size(max = 100, message = "O nome não pode ser maior que 100 caracteres.")
         String nome,
 
-        @NotNull(message = "O email não pode ser nulo.")
+        @NotBlank(message = "O e-mail é obrigatório.")
+        @Email(message = "O e-mail informado é inválido.")
         @Size(max = 100, message = "O email não pode ser maior que 100 caracteres.")
         String email,
 
-        @NotNull(message = "O telefone não pode ser nulo.")
+        @NotBlank(message = "O telefone é obrigatório.")
         @Size(max = 15, message = "O telefone não pode ser maior que 15 caracteres.")
+        @Pattern(regexp = "(?:\\d{10,11}|\\(\\d{2}\\) ?\\d{4,5}-\\d{4})", message = "O telefone deve conter DDD e 10 ou 11 números.")
         String telefone,
 
         @NotNull(message = "O endereco não pode ser nulo.")

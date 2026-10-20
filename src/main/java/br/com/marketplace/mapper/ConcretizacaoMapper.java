@@ -31,7 +31,10 @@ public class ConcretizacaoMapper {
                 concretizacao.getDataAceite(),
                 concretizacao.getAceitante().getCpf(),
                 concretizacao.getAceitante().getNome(),
-                oferta.getUsuarioProponente().getCpf()
+                oferta.getUsuarioProponente().getCpf(),
+                oferta.getUsuarioProponente().getNome(),
+                oferta.getTipo(),
+                oferta.getValorDeMercado()
         );
     }
 }

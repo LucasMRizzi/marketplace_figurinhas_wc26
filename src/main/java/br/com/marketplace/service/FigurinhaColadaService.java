@@ -220,6 +220,11 @@ public class FigurinhaColadaService {
         long totalFigurinhas =
                 figurinhaRepository.count();
 
+        if (totalFigurinhas == 0) {
+            album.atualizarCompletude(BigDecimal.ZERO);
+            return;
+        }
+
         long totalColadas =
                 figurinhaColadaRepository
                         .countByAlbum_Id_NomeAndAlbum_Id_Usuario(
