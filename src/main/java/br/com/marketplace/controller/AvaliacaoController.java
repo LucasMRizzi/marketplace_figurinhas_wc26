@@ -16,12 +16,20 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/avaliacoes")
 @RequiredArgsConstructor
+@Tag(
+        name = "Avaliações",
+        description = "Gerenciamento das avaliações feitas entre usuários após as negociações."
+)
 public class AvaliacaoController {
 
     private final AvaliacaoService avaliacaoService;
 
     @PostMapping("/concretizacoes/{idConcretizacao}")
     @ResponseStatus(HttpStatus.CREATED)
+    @Operation(
+            summary = "Registrar avaliação",
+            description = "Registra uma nova avaliação (nota e comentário) referente a uma negociação concretizada."
+    )
     public AvaliacaoResponse criar(
             @PathVariable Integer idConcretizacao,
             @AuthenticationPrincipal UsuarioDetails usuario,
@@ -38,6 +46,10 @@ public class AvaliacaoController {
     @GetMapping(
             "/{idConcretizacao}/{cpfAvaliador}/{cpfAvaliado}"
     )
+    @Operation(
+            summary = "Buscar avaliação",
+            description = "Busca uma avaliação específica com base na concretização, e nos CPFs do avaliador e avaliado."
+    )
     public AvaliacaoResponse buscar(
             @PathVariable Integer idConcretizacao,
             @PathVariable String cpfAvaliador,
@@ -51,6 +63,10 @@ public class AvaliacaoController {
     }
 
     @GetMapping("/avaliados/{cpf}")
+    @Operation(
+            summary = "Listar avaliações recebidas",
+            description = "Retorna todo o histórico de avaliações que um usuário específico recebeu."
+    )
     public List<AvaliacaoResponse> listarPorAvaliado(
             @PathVariable String cpf
     ) {
@@ -59,6 +75,10 @@ public class AvaliacaoController {
     }
 
     @GetMapping("/avaliadores/{cpf}")
+    @Operation(
+            summary = "Listar avaliações feitas",
+            description = "Retorna todo o histórico de avaliações que um usuário específico realizou."
+    )
     public List<AvaliacaoResponse> listarPorAvaliador(
             @PathVariable String cpf
     ) {
@@ -68,6 +88,10 @@ public class AvaliacaoController {
 
     @PutMapping(
             "/{idConcretizacao}/{cpfAvaliador}/{cpfAvaliado}"
+    )
+    @Operation(
+            summary = "Atualizar avaliação",
+            description = "Modifica a nota e/ou o comentário de uma avaliação já existente."
     )
     public AvaliacaoResponse atualizar(
             @PathVariable Integer idConcretizacao,
@@ -88,6 +112,10 @@ public class AvaliacaoController {
             "/{idConcretizacao}/{cpfAvaliador}/{cpfAvaliado}"
     )
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Operation(
+            summary = "Remover avaliação",
+            description = "Exclui uma avaliação feita em uma concretização."
+    )
     public void remover(
             @PathVariable Integer idConcretizacao,
             @PathVariable String cpfAvaliador,

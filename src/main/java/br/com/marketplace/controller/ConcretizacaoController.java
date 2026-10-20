@@ -15,12 +15,20 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/concretizacoes")
 @RequiredArgsConstructor
+@Tag(
+        name = "Concretizações",
+        description = "Gerenciamento do aceite e finalização das propostas (vendas e trocas)."
+)
 public class ConcretizacaoController {
 
     private final ConcretizacaoService concretizacaoService;
 
     @PostMapping("/ofertas/{idOferta}")
     @ResponseStatus(HttpStatus.ACCEPTED)
+    @Operation(
+            summary = "Aceitar oferta (Concretizar)",
+            description = "Gera uma concretização informando que um usuário (aceitante) fechou negócio na oferta estipulada."
+    )
     public ConcretizacaoResponse criar(
             @PathVariable Integer idOferta,
             @Valid
@@ -32,13 +40,20 @@ public class ConcretizacaoController {
         );
     }
 
-
     @GetMapping
+    @Operation(
+            summary = "Listar todas as concretizações",
+            description = "Retorna o histórico completo de todas as negociações finalizadas no marketplace."
+    )
     public List<ConcretizacaoResponse> listarTodas() {
         return concretizacaoService.listarTodas();
     }
 
     @GetMapping("/{idConcretizacao}")
+    @Operation(
+            summary = "Buscar concretização",
+            description = "Recupera os detalhes de um fechamento de negócio pelo ID da concretização."
+    )
     public ConcretizacaoResponse buscar(
             @PathVariable Integer idConcretizacao
     ) {
@@ -48,6 +63,10 @@ public class ConcretizacaoController {
     }
 
     @GetMapping("/oferta/{idOferta}")
+    @Operation(
+            summary = "Buscar por oferta",
+            description = "Encontra a concretização (se houver) vinculada a uma oferta específica."
+    )
     public ConcretizacaoResponse buscarPorOferta(
             @PathVariable Integer idOferta
     ) {
@@ -57,6 +76,10 @@ public class ConcretizacaoController {
     }
 
     @GetMapping("/aceitante/{cpf}")
+    @Operation(
+            summary = "Listar por aceitante",
+            description = "Retorna todas as ofertas que foram aceitas/concretizadas por um usuário específico."
+    )
     public List<ConcretizacaoResponse> listarPorAceitante(
             @PathVariable String cpf
     ) {
