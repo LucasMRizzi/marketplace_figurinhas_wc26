@@ -51,6 +51,14 @@ public class PagamentoConsumer {
             return;
         }
 
+        if (oferta.ehTroca()) {
+            concretizacao.confirmarTroca(
+                    "TROCA-LEGADO-" + concretizacao.getIdConcretizacao()
+            );
+            oferta.concretizar();
+            return;
+        }
+
         Venda venda = vendaRepository
                 .findById(oferta.getIdOferta())
                 .orElseThrow(() ->

@@ -4,13 +4,24 @@ import br.com.marketplace.dto.oferta.OfertaResponse;
 import br.com.marketplace.entity.Oferta;
 import br.com.marketplace.entity.enums.StatusOferta;
 import br.com.marketplace.entity.enums.TipoOferta;
+import br.com.marketplace.entity.enums.TipoFigurinha;
+import br.com.marketplace.entity.Figurinha;
+import br.com.marketplace.entity.ItemOfertado;
+import br.com.marketplace.entity.PosseFigurinha;
+import br.com.marketplace.entity.Usuario;
 import br.com.marketplace.exception.RecursoNaoEncontradoException;
 import br.com.marketplace.mapper.OfertaMapper;
 import br.com.marketplace.repository.OfertaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.jpa.domain.Specification;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Predicate;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -67,6 +78,58 @@ public class OfertaService {
         }
 
         return ofertas.stream()
+                .map(ofertaMapper::toResponse)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<OfertaResponse> buscarAvancado(
+            List<TipoOferta> tipos,
+            List<TipoFigurinha> tiposFigurinha,
+            BigDecimal valorMinimo,
+            BigDecimal valorMaximo,
+            String cidade,
+            String termo,
+            String cpfUsuarioExcluir
+    ) {
+        Specification<Oferta> specification = (root, query, builder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            Join<Oferta, Usuario> proponente = root.join("usuarioProponente", JoinType.INNER);
+
+            if (tipos != null && !tipos.isEmpty()) {
+                predicates.add(root.get("tipo").in(tipos));
+            }
+            predicates.add(builder.equal(root.get("status"), StatusOferta.PENDENTE));
+            predicates.add(builder.notEqual(proponente.get("cpf"), cpfUsuarioExcluir));
+            if (valorMinimo != null) {
+                predicates.add(builder.greaterThanOrEqualTo(root.get("valorDeMercado"), valorMinimo));
+            }
+            if (valorMaximo != null) {
+                predicates.add(builder.lessThanOrEqualTo(root.get("valorDeMercado"), valorMaximo));
+            }
+            if (cidade != null && !cidade.isBlank()) {
+                predicates.add(builder.equal(builder.lower(proponente.get("endereco").get("cidade")), cidade.trim().toLowerCase()));
+            }
+            if (termo != null && !termo.isBlank()) {
+                String like = "%" + termo.trim().toLowerCase() + "%";
+                predicates.add(builder.or(
+                        builder.like(builder.lower(root.get("descricao")), like),
+                        builder.like(builder.lower(proponente.get("nome")), like),
+                        builder.like(proponente.get("cpf"), like)
+                ));
+            }
+            if (tiposFigurinha != null && !tiposFigurinha.isEmpty()) {
+                Join<Oferta, ItemOfertado> item = root.join("itensOfertados", JoinType.INNER);
+                Join<ItemOfertado, PosseFigurinha> posse = item.join("posseFigurinha", JoinType.INNER);
+                Join<PosseFigurinha, Figurinha> figurinha = posse.join("figurinha", JoinType.INNER);
+                predicates.add(figurinha.get("id").get("tipo").in(tiposFigurinha));
+            }
+
+            query.distinct(true);
+            return builder.and(predicates.toArray(Predicate[]::new));
+        };
+
+        return ofertaRepository.findAll(specification).stream()
                 .map(ofertaMapper::toResponse)
                 .toList();
     }

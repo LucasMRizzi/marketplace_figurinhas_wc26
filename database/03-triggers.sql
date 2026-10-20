@@ -72,19 +72,18 @@ BEGIN
             NEW.id_concretizacao;
     END IF;
 
-    IF NEW.usuario_avaliador <> usuario_aceitante THEN
+    IF NOT (
+        (NEW.usuario_avaliador = usuario_aceitante
+            AND NEW.usuario_avaliado = usuario_proponente)
+        OR
+        (NEW.usuario_avaliador = usuario_proponente
+            AND NEW.usuario_avaliado = usuario_aceitante)
+    ) THEN
         RAISE EXCEPTION
-            'O usuário avaliador % deve ser o aceitante % da concretização %.',
-            NEW.usuario_avaliador,
+            'A avaliação deve ocorrer entre o proponente % e o aceitante % da concretização %.',
+            usuario_proponente,
             usuario_aceitante,
             NEW.id_concretizacao;
-    END IF;
-
-    IF NEW.usuario_avaliado <> usuario_proponente THEN
-        RAISE EXCEPTION
-            'O usuário avaliado % deve ser o proponente % da oferta concretizada.',
-            NEW.usuario_avaliado,
-            usuario_proponente;
     END IF;
 
     RETURN NEW;

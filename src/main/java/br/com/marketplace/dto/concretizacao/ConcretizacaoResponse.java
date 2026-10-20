@@ -1,6 +1,8 @@
 package br.com.marketplace.dto.concretizacao;
 
 import br.com.marketplace.entity.enums.StatusPagamento;
+import br.com.marketplace.entity.enums.TipoOferta;
+import java.math.BigDecimal;
 
 import java.time.LocalDateTime;
 
@@ -11,7 +13,10 @@ public record ConcretizacaoResponse(
         LocalDateTime dataAceite,
         String cpfAceitante,
         String nomeAceitante,
-        String cpfProponente
+        String cpfProponente,
+        String nomeProponente,
+        TipoOferta tipoOferta,
+        BigDecimal valorDeMercado
 ) {
 }
 

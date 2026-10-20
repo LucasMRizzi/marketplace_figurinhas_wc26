@@ -3,8 +3,8 @@ package br.com.marketplace.controller;
 import br.com.marketplace.dto.concretizacao.ConcretizacaoResponse;
 import br.com.marketplace.dto.concretizacao.CriarConcretizacaoRequest;
 import br.com.marketplace.service.ConcretizacaoService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
+import br.com.marketplace.security.UsuarioDetails;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -85,5 +85,11 @@ public class ConcretizacaoController {
     ) {
         return concretizacaoService
                 .listarPorAceitante(cpf);
+    }
+
+    @GetMapping("/minhas")
+    public List<ConcretizacaoResponse> listarMinhas(
+            @AuthenticationPrincipal UsuarioDetails usuario) {
+        return concretizacaoService.listarDoUsuario(usuario.getUsuario().getCpf());
     }
 }

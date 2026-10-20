@@ -13,7 +13,6 @@ import br.com.marketplace.exception.RegraDeNegocioException;
 import br.com.marketplace.mapper.AvaliacaoMapper;
 import br.com.marketplace.repository.AvaliacaoRepository;
 import br.com.marketplace.repository.ConcretizacaoRepository;
-import br.com.marketplace.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,7 +31,6 @@ public class AvaliacaoService {
 
     private final AvaliacaoRepository avaliacaoRepository;
     private final ConcretizacaoRepository concretizacaoRepository;
-    private final UsuarioRepository usuarioRepository;
     private final AvaliacaoMapper avaliacaoMapper;
 
     /**
@@ -49,7 +47,8 @@ public class AvaliacaoService {
     @Transactional
     public AvaliacaoResponse criar(
             Integer idConcretizacao,
-            CriarAvaliacaoRequest request
+            CriarAvaliacaoRequest request,
+            Usuario avaliador
     ) {
         Concretizacao concretizacao =
                 concretizacaoRepository
@@ -60,17 +59,21 @@ public class AvaliacaoService {
                                 )
                         );
 
-        Usuario avaliador = usuarioRepository
-                .findById(request.cpfAvaliador())
-                .orElseThrow(() ->
-                        new RecursoNaoEncontradoException(
-                                "Usuário avaliador não encontrado."
-                        )
-                );
+        if (request.cpfAvaliador() != null
+                && !request.cpfAvaliador().equals(avaliador.getCpf())) {
+            throw new RegraDeNegocioException("O avaliador deve ser o usuário autenticado.");
+        }
 
-        Usuario avaliado = concretizacao
-                .getOferta()
-                .getUsuarioProponente();
+        Usuario proponente = concretizacao.getOferta().getUsuarioProponente();
+        Usuario aceitante = concretizacao.getAceitante();
+        Usuario avaliado;
+        if (avaliador.getCpf().equals(aceitante.getCpf())) {
+            avaliado = proponente;
+        } else if (avaliador.getCpf().equals(proponente.getCpf())) {
+            avaliado = aceitante;
+        } else {
+            throw new RegraDeNegocioException("Apenas participantes podem avaliar esta negociação.");
+        }
 
         validarParticipantes(
                 concretizacao,
@@ -254,13 +257,10 @@ public class AvaliacaoService {
             Usuario avaliador,
             Usuario avaliado
     ) {
-        if (!concretizacao.getAceitante()
-                .getCpf()
-                .equals(avaliador.getCpf())) {
-            throw new RegraDeNegocioException(
-                    "Apenas o aceitante pode avaliar essa concretização."
-            );
-        }
+        boolean participante = concretizacao.getAceitante().getCpf().equals(avaliador.getCpf())
+                || concretizacao.getUsuarioProponente().getCpf().equals(avaliador.getCpf());
+        if (!participante) throw new RegraDeNegocioException(
+                "Apenas participantes podem avaliar essa concretização.");
 
         if (avaliador.getCpf()
                 .equals(avaliado.getCpf())) {

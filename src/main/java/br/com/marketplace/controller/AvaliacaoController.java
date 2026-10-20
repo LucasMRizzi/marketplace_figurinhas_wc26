@@ -4,8 +4,8 @@ import br.com.marketplace.dto.avaliacao.AtualizarAvaliacaoRequest;
 import br.com.marketplace.dto.avaliacao.AvaliacaoResponse;
 import br.com.marketplace.dto.avaliacao.CriarAvaliacaoRequest;
 import br.com.marketplace.service.AvaliacaoService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
+import br.com.marketplace.security.UsuarioDetails;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -32,12 +32,14 @@ public class AvaliacaoController {
     )
     public AvaliacaoResponse criar(
             @PathVariable Integer idConcretizacao,
+            @AuthenticationPrincipal UsuarioDetails usuario,
             @Valid
             @RequestBody CriarAvaliacaoRequest request
     ) {
         return avaliacaoService.criar(
                 idConcretizacao,
-                request
+                request,
+                usuario.getUsuario()
         );
     }
 

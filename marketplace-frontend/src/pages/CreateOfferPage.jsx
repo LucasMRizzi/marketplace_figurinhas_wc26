@@ -2,8 +2,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createSale, createTrade, getPossessions, getProfile } from '../services/api';
 
-const CONDITIONS = ['PERFEITA', 'EXCELENTE', 'RAZOAVEL', 'DESGASTADA'];
-const STICKER_TYPES = ['NORMAL', 'COMUM', 'LEGEND_COMUM', 'LEGEND_BRONZE', 'LEGEND_PRATA', 'LEGEND_OURO'];
+const CONDITIONS = ['EXCELENTE', 'RAZOAVEL', 'DESGASTADA'];
+const STICKER_TYPES = ['COMUM', 'LEGEND_COMUM', 'LEGEND_BRONZE', 'LEGEND_PRATA', 'LEGEND_OURO'];
 
 function normalizeList(value) {
   if (Array.isArray(value)) return value;
@@ -36,6 +36,8 @@ export default function CreateOfferPage() {
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const minDateTime = new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
+    .toISOString().slice(0, 16);
 
   useEffect(() => {
     let active = true;
@@ -67,6 +69,12 @@ export default function CreateOfferPage() {
   }
 
   function togglePossession(possession) {
+    if (!possession.idPosse || !possession.codigo || possession.codigo === '—' || !possession.tipo || possession.tipo === '—') {
+      setError('Não foi possível identificar a figurinha do inventário. Atualize a página e tente novamente.');
+      return;
+    }
+
+    setError('');
     setForm((current) => {
       const exists = current.itensOfertados.some((item) => item.idPosse === possession.idPosse);
       return {
@@ -80,7 +88,7 @@ export default function CreateOfferPage() {
               tipo: possession.tipo,
               quantidadeDisponivel: possession.quantidade,
               quantidadeOfertada: 1,
-              condicao: 'PERFEITA',
+              condicao: 'EXCELENTE',
               foto: ''
             }]
       };
@@ -100,7 +108,7 @@ export default function CreateOfferPage() {
     setForm((current) => ({
       ...current,
       itensSolicitados: [...current.itensSolicitados, {
-        key: crypto.randomUUID(), codigoFigurinha: '', tipoFigurinha: 'NORMAL', quantidade: 1
+        key: crypto.randomUUID(), codigoFigurinha: '', tipoFigurinha: 'COMUM', quantidade: 1
       }]
     }));
   }
@@ -198,7 +206,7 @@ export default function CreateOfferPage() {
           <textarea name="descricao" value={form.descricao} onChange={updateField} maxLength="140" rows="4" placeholder="Descreva sua proposta" />
         </label>
         <label>Prazo limite
-          <input name="prazoLimite" type="datetime-local" value={form.prazoLimite} onChange={updateField} required />
+          <input className="date-time-input" name="prazoLimite" type="datetime-local" min={minDateTime} value={form.prazoLimite} onChange={updateField} required />
         </label>
         {type === 'VENDA' && <label>Valor da proposta
           <input name="valorDaProposta" type="number" min="0.01" step="0.01" value={form.valorDaProposta} onChange={updateField} placeholder="0,00" required />

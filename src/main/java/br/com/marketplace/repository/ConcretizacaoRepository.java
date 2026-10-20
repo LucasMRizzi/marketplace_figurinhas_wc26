@@ -20,4 +20,6 @@ public interface ConcretizacaoRepository
     List<Concretizacao> findByAceitanteCpf(
             String cpf
     );
+
+    List<Concretizacao> findByOfertaUsuarioProponenteCpf(String cpf);
 }

@@ -3,6 +3,7 @@ package br.com.marketplace.service;
 import br.com.marketplace.dto.usuario.AtualizarUsuarioRequest;
 import br.com.marketplace.dto.usuario.CriarUsuarioRequest;
 import br.com.marketplace.dto.usuario.UsuarioResponse;
+import br.com.marketplace.dto.endereco.EnderecoRequest;
 import br.com.marketplace.entity.Usuario;
 import br.com.marketplace.exception.RecursoJaExisteException;
 import br.com.marketplace.exception.RecursoNaoEncontradoException;
@@ -39,6 +40,7 @@ public class UsuarioService {
      */
     @Transactional
     public UsuarioResponse criar(CriarUsuarioRequest request) {
+        request = normalizar(request);
         if (usuarioRepository.existsById(request.cpf())) {
             throw new RecursoJaExisteException(
                     "Já existe um usuário com esse CPF."
@@ -98,6 +100,7 @@ public class UsuarioService {
             String cpf,
             AtualizarUsuarioRequest request
     ) {
+        request = normalizar(request);
         Usuario usuario = buscarEntidadePorCpf(cpf);
 
         if (!usuario.getEmail().equals(request.email())
@@ -148,5 +151,39 @@ public class UsuarioService {
                                 "Usuário não encontrado."
                         )
                 );
+    }
+
+    private CriarUsuarioRequest normalizar(CriarUsuarioRequest request) {
+        return new CriarUsuarioRequest(
+                somenteDigitos(request.cpf()),
+                request.nome().trim(),
+                request.email().trim(),
+                somenteDigitos(request.telefone()),
+                normalizar(request.endereco()),
+                request.senha()
+        );
+    }
+
+    private AtualizarUsuarioRequest normalizar(AtualizarUsuarioRequest request) {
+        return new AtualizarUsuarioRequest(
+                request.nome().trim(),
+                request.email().trim(),
+                somenteDigitos(request.telefone()),
+                normalizar(request.endereco())
+        );
+    }
+
+    private EnderecoRequest normalizar(EnderecoRequest request) {
+        return new EnderecoRequest(
+                request.logradouro().trim(),
+                request.numero(),
+                somenteDigitos(request.caixaPostal()),
+                request.cidade().trim(),
+                somenteDigitos(request.cep())
+        );
+    }
+
+    private String somenteDigitos(String valor) {
+        return valor == null ? null : valor.replaceAll("\\D", "");
     }
 }
